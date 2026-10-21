@@ -1,0 +1,397 @@
+#!/usr/bin/env xslash
+{
+  "name": "rustc",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "path": "bin/rustc",
+      "compose": [
+        {
+          "hash": "blake3",
+          "digest": "310828906b7392eb996bee9cd4a161bd678a25384eaba7f88a7b522b04ea7a20",
+          "size": 61273988,
+          "format": "tar.xz",
+          "strip": "rustc-1.99.1-x86_64-apple-darwin/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustc-1.99.1-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "fec0b556fb2195034b83a43ad15316468c36b72922194bd76a1eedcd7b05b75d",
+          "size": 9610548,
+          "format": "tar.xz",
+          "strip": "cargo-1.99.1-x86_64-apple-darwin/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/cargo-1.99.1-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "619445b6ee5027d83f349c42ea986a4b89b29c4f0b76d0c890dad33ee447b6cf",
+          "size": 30578396,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-x86_64-apple-darwin/rust-std-x86_64-apple-darwin",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "8932d151bdd062c728dfadbc24e059d035a2761042248210deb9539d214b763e",
+          "size": 1712432,
+          "format": "tar.xz",
+          "strip": "rustfmt-1.99.1-x86_64-apple-darwin/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustfmt-1.99.1-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "ea64ce1876556abf10203b641cbb4fa50319519d59aac57a10aae759438f376a",
+          "size": 3127092,
+          "format": "tar.xz",
+          "strip": "clippy-1.99.1-x86_64-apple-darwin/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "bin/rustc",
+      "compose": [
+        {
+          "hash": "blake3",
+          "digest": "ab835c8bc6f481e375843266bf1dcd1f432dc527581d5194921d3cfdc0645744",
+          "size": 50728492,
+          "format": "tar.xz",
+          "strip": "rustc-1.99.1-aarch64-apple-darwin/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustc-1.99.1-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "973088361f7b3c0d2ec660741fb4969c87160cf4dfe1b919d96eeab12faae758",
+          "size": 8950664,
+          "format": "tar.xz",
+          "strip": "cargo-1.99.1-aarch64-apple-darwin/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/cargo-1.99.1-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "276ce86a5eb01a685ce43ac7351e94e43e7ac759f4f44cfb84a4cfb869352048",
+          "size": 30709240,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-aarch64-apple-darwin/rust-std-aarch64-apple-darwin",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "b6c187ff19b6f700fc650fabd00f485931fd5e1810467fce01c690ac31ea7b6e",
+          "size": 1507584,
+          "format": "tar.xz",
+          "strip": "rustfmt-1.99.1-aarch64-apple-darwin/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustfmt-1.99.1-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "269c237d934a4c0458b6eb6e9bb338cc94ed720fced625a220a6447239554a99",
+          "size": 2806700,
+          "format": "tar.xz",
+          "strip": "clippy-1.99.1-aarch64-apple-darwin/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "bin/rustc",
+      "compose": [
+        {
+          "hash": "blake3",
+          "digest": "fa92325bff46cb3eb1a09fbd47b0ebad567947c8a499d32b12e0c5ab891086c6",
+          "size": 84098960,
+          "format": "tar.xz",
+          "strip": "rustc-1.99.1-x86_64-unknown-linux-gnu/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustc-1.99.1-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "f9600aca6d8b56883d7d5f61c29e141d09d28bb4c75e1b5c2e2f00b82b5c6dda",
+          "size": 10954816,
+          "format": "tar.xz",
+          "strip": "cargo-1.99.1-x86_64-unknown-linux-gnu/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/cargo-1.99.1-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "3d11eba87889c0cd9224de1ca3cbcb9582c2a87472d2aafd767f02e331a182fa",
+          "size": 31563228,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-x86_64-unknown-linux-gnu/rust-std-x86_64-unknown-linux-gnu",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "6363a55bdbe55c177d8deba6bd29e3c2abf9c52289bccd61d4cec625e7c71938",
+          "size": 2488800,
+          "format": "tar.xz",
+          "strip": "rustfmt-1.99.1-x86_64-unknown-linux-gnu/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustfmt-1.99.1-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "e91fed70ffc81fe5801b5561765b4e6e3927e18aaed40e8bbab2bf19fa8c8642",
+          "size": 5254436,
+          "format": "tar.xz",
+          "strip": "clippy-1.99.1-x86_64-unknown-linux-gnu/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "bin/rustc",
+      "compose": [
+        {
+          "hash": "blake3",
+          "digest": "5750b52f3773e54cd3dcaf5fc4e1c484cd967189ee1109f0a2c4e7bf5f9de562",
+          "size": 68717724,
+          "format": "tar.xz",
+          "strip": "rustc-1.99.1-aarch64-unknown-linux-gnu/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustc-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "575b917ef9082c87f502f4a3aea2788b49e8f4455f024b2223c1e9be8b578a9e",
+          "size": 10588432,
+          "format": "tar.xz",
+          "strip": "cargo-1.99.1-aarch64-unknown-linux-gnu/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/cargo-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "5da85da685396de204826bc44a0c5c0f814fe50d6cf81728ad12c100bf365afa",
+          "size": 31796492,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-aarch64-unknown-linux-gnu/rust-std-aarch64-unknown-linux-gnu",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "c211c812132110484121afdfbd700c9118472809a2efb32eb7c99e0009bea1fd",
+          "size": 2286880,
+          "format": "tar.xz",
+          "strip": "rustfmt-1.99.1-aarch64-unknown-linux-gnu/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustfmt-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "caf5a506383bac48e707cbabaa0b70092e378f1c0ed8a7d8c90b3316b170a220",
+          "size": 3805468,
+          "format": "tar.xz",
+          "strip": "clippy-1.99.1-aarch64-unknown-linux-gnu/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "bin/rustc.exe",
+      "compose": [
+        {
+          "hash": "blake3",
+          "digest": "aacd60eff28615139db3ffa72effac7ea1d74160aae21ae1e47a07d2252d1734",
+          "size": 77075164,
+          "format": "tar.xz",
+          "strip": "rustc-1.99.1-x86_64-pc-windows-msvc/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustc-1.99.1-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "f9823fe3c68d0fd38210099b59b941c988d86cd44aa990175559adb6cb6b09a5",
+          "size": 9881184,
+          "format": "tar.xz",
+          "strip": "cargo-1.99.1-x86_64-pc-windows-msvc/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/cargo-1.99.1-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "5fc9c23b6b9bdc01bb7507e822fa0354d948c74df1b29ba771f926dedee8ae5e",
+          "size": 23619148,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-x86_64-pc-windows-msvc/rust-std-x86_64-pc-windows-msvc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "28580a9ed4a138c094c79c4a15f3a5aaf7622d46ba0282289a4c424ed4e3b771",
+          "size": 2610456,
+          "format": "tar.xz",
+          "strip": "rustfmt-1.99.1-x86_64-pc-windows-msvc/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustfmt-1.99.1-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "b035b7c0aead5db3fdc48d7ae7ac6b2c806f79ca5c204c0df220bc9aeb237296",
+          "size": 3819596,
+          "format": "tar.xz",
+          "strip": "clippy-1.99.1-x86_64-pc-windows-msvc/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "bin/rustc.exe",
+      "compose": [
+        {
+          "hash": "blake3",
+          "digest": "ac833d4d4f03bad4f526b1754bd706e937da906c1a3631bfad4000d706befe78",
+          "size": 62551604,
+          "format": "tar.xz",
+          "strip": "rustc-1.99.1-aarch64-pc-windows-msvc/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustc-1.99.1-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "25d10955a4083d4c9e434f0e595981f8f7837b0d1cbc876f80d2a9bf43b1d3f0",
+          "size": 10186152,
+          "format": "tar.xz",
+          "strip": "cargo-1.99.1-aarch64-pc-windows-msvc/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/cargo-1.99.1-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "4dd5537b3feb277441a140c0f7dc5528b63d388a277fd18c7f92f7b3755df4a5",
+          "size": 23729852,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-aarch64-pc-windows-msvc/rust-std-aarch64-pc-windows-msvc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "f955aabee402e85cba53f6c5fd2ccadcb76bb4be5b7bbcd3fa3bf3bc86ba70c9",
+          "size": 2665844,
+          "format": "tar.xz",
+          "strip": "rustfmt-1.99.1-aarch64-pc-windows-msvc/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rustfmt-1.99.1-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "e93653830e6c490ffd02fb3be4cdcb8f064c5993b171bd1b59cf014a9a4263a3",
+          "size": 4041972,
+          "format": "tar.xz",
+          "strip": "clippy-1.99.1-aarch64-pc-windows-msvc/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
