@@ -1,0 +1,357 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "XslashCompat": {
+      "additionalProperties": false,
+      "description": "The actual xslash parser used for dotslash compatibility.",
+      "properties": {
+        "final": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "platforms": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "digest": {
+                    "type": "string"
+                  },
+                  "format": {
+                    "type": "string"
+                  },
+                  "hash": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "providers": {
+                    "items": {
+                      "additionalProperties": {},
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "readonly": {
+                    "type": "boolean"
+                  },
+                  "rw": {
+                    "type": "boolean"
+                  },
+                  "size": {
+                    "type": "number"
+                  }
+                },
+                "required": ["hash", "digest", "size", "path"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "compose": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "digest": {
+                          "type": "string"
+                        },
+                        "format": {
+                          "type": "string"
+                        },
+                        "hash": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "providers": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              }
+                            },
+                            "required": ["url"],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "size": {
+                          "type": "number"
+                        },
+                        "strip": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["hash", "digest", "size", "providers"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "rw": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["path"],
+                "type": "object"
+              }
+            ]
+          },
+          "type": "object"
+        }
+      },
+      "required": ["name"],
+      "type": "object"
+    },
+    "XslashEntry": {
+      "additionalProperties": false,
+      "description": "A parsed xslash entry: JSON describing where to download a prebuilt executable per platform. A leading `#!` shebang line is stripped before the JSON is parsed.",
+      "properties": {
+        "final": {
+          "description": "If true, use this entry directly and skip project-level resolution.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "Logical name; used as arg0 on exec and as the lookup key in `xslash.json`.",
+          "type": "string"
+        },
+        "platforms": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "digest": {
+                    "description": "Expected artifact digest, lowercase hex.",
+                    "type": "string"
+                  },
+                  "format": {
+                    "description": "Archive/compression format, or omitted for a raw executable. One of `tar.gz`, `tar.xz`, `tar.zst`, `tar`, `gz`, `xz`, `zst`, `zip`.",
+                    "type": "string"
+                  },
+                  "hash": {
+                    "description": "Hash algorithm for `digest`; only `blake3` is supported.",
+                    "type": "string"
+                  },
+                  "path": {
+                    "description": "Path to the executable, run from `<extraction dir>/<path>`. For a single-file format (`gz`/`xz`/`zst`/none) it's where the decompressed file — itself the executable — is placed.",
+                    "type": "string"
+                  },
+                  "providers": {
+                    "description": "Download sources, tried in order. At least one must carry a `url`; `url` is optional per provider only for dotslash compatibility.",
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "description": "Provider type, kept for dotslash compatibility.",
+                          "type": "string"
+                        },
+                        "url": {
+                          "description": "Download URL; `http`/`https` only. Optional only for dotslash compat.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "readonly": {
+                    "description": "dotslash-compatibility fallback for `rw`; shouldn't co-exist with it.",
+                    "type": "boolean"
+                  },
+                  "rw": {
+                    "description": "If true, extract under `rw/` (mutable) instead of `ro/` (shared).",
+                    "type": "boolean"
+                  },
+                  "size": {
+                    "description": "Expected artifact size in bytes.",
+                    "type": "number"
+                  }
+                },
+                "required": ["hash", "digest", "size", "path"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "compose": {
+                    "description": "Several artifacts composed into one directory, instead of a single artifact. Mutually exclusive with the artifact fields above.",
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "digest": {
+                          "description": "Expected artifact digest, lowercase hex.",
+                          "type": "string"
+                        },
+                        "format": {
+                          "description": "Archive/compression format, or omitted for a raw file. One of `tar.gz`, `tar.xz`, `tar.zst`, `tar`, `gz`, `xz`, `zst`, `zip`.",
+                          "type": "string"
+                        },
+                        "hash": {
+                          "description": "Hash algorithm for `digest`; only `blake3` is supported.",
+                          "type": "string"
+                        },
+                        "path": {
+                          "description": "Where this artifact goes in the composed directory. Archive: the subpath to extract into (defaults to the root). Single-file: the path the file is placed at (required).",
+                          "type": "string"
+                        },
+                        "providers": {
+                          "description": "Download sources, tried in order.",
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "url": {
+                                "description": "Download URL; `http`/`https` only.",
+                                "type": "string"
+                              }
+                            },
+                            "required": ["url"],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "size": {
+                          "description": "Expected artifact size in bytes.",
+                          "type": "number"
+                        },
+                        "strip": {
+                          "description": "For an archive, extract only entries under this leading subpath, dropping the prefix; omit to extract the whole archive. Ignored for single-file formats. Lets archives with differing leading directories merge into one tree.",
+                          "type": "string"
+                        }
+                      },
+                      "required": ["hash", "digest", "size", "providers"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "path": {
+                    "description": "Path to the executable within the composed directory.",
+                    "type": "string"
+                  },
+                  "rw": {
+                    "description": "If true, extract under `rw/` (mutable) instead of `ro/` (shared).",
+                    "type": "boolean"
+                  }
+                },
+                "required": ["path"],
+                "type": "object"
+              }
+            ]
+          },
+          "description": "Platform blocks keyed by `<kernel>-<arch>` — kernel `linux`/`darwin`/ `windows`, arch `amd64`/`arm64` (e.g. `linux-amd64`). Empty for a name-only entry that defers to project-level resolution.\n\nEach block is a single artifact or a `compose` of several into one directory; `path` is always required. Enforced at resolution, not by this type.",
+          "type": "object"
+        }
+      },
+      "required": ["name"],
+      "type": "object"
+    },
+    "XslashSkeleton": {
+      "additionalProperties": false,
+      "description": "The suggested skeleton type for creating or bumping xslash entries.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "platforms": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "format": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "providers": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["url"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "rw": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["path"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "compose": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "format": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "providers": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              }
+                            },
+                            "required": ["url"],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "strip": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["providers"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "rw": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["path"],
+                "type": "object"
+              }
+            ]
+          },
+          "type": "object"
+        }
+      },
+      "required": ["name"],
+      "type": "object"
+    }
+  }
+}
