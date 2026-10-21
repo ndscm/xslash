@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "python3",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "3425d0179614fc3dfc77c3021762cffbaf9c33a01922966c54d30a5e6597c520",
+      "size": 27707843,
+      "format": "tar.gz",
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.15.1+20261021-x86_64-apple-darwin-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "091b3bc1da195d3a72c2e65464f4679473516b90095693d325443bac43706622",
+      "size": 27764269,
+      "format": "tar.gz",
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.15.1+20261021-aarch64-apple-darwin-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "8f6db28a812d56713532738104bb4f8bb4057c574b7952a9f05557092864dae7",
+      "size": 38075450,
+      "format": "tar.gz",
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.15.1+20261021-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "cace4f91f75fff2b57dffe49ea041e257f777524843d70f187147b9080bd1992",
+      "size": 31702997,
+      "format": "tar.gz",
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.15.1+20261021-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "10784523fdb73a7a811d873ce8ff65939f6dc741c1be589b7e59215a6d6b9e82",
+      "size": 24391528,
+      "format": "tar.gz",
+      "path": "python/python.exe",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.15.1+20261021-x86_64-pc-windows-msvc-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "5b288f3e854e7416594d96156573498665d1c2f75d584abe86cfbd29e4ab8bd8",
+      "size": 23102586,
+      "format": "tar.gz",
+      "path": "python/python.exe",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.15.1+20261021-aarch64-pc-windows-msvc-install_only_stripped.tar.gz"
+        }
+      ]
+    }
+  }
+}
