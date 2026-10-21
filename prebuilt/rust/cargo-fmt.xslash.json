@@ -1,0 +1,305 @@
+{
+  "name": "cargo-fmt",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "bin/cargo-fmt",
+      "compose": [
+        {
+          "format": "tar.xz",
+          "strip": "rustc-{{VERSION}}-x86_64-apple-darwin/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustc-{{VERSION}}-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "cargo-{{VERSION}}-x86_64-apple-darwin/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/cargo-{{VERSION}}-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-x86_64-apple-darwin/rust-std-x86_64-apple-darwin",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rustfmt-{{VERSION}}-x86_64-apple-darwin/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustfmt-{{VERSION}}-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "clippy-{{VERSION}}-x86_64-apple-darwin/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "bin/cargo-fmt",
+      "compose": [
+        {
+          "format": "tar.xz",
+          "strip": "rustc-{{VERSION}}-aarch64-apple-darwin/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustc-{{VERSION}}-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "cargo-{{VERSION}}-aarch64-apple-darwin/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/cargo-{{VERSION}}-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-aarch64-apple-darwin/rust-std-aarch64-apple-darwin",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rustfmt-{{VERSION}}-aarch64-apple-darwin/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustfmt-{{VERSION}}-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "clippy-{{VERSION}}-aarch64-apple-darwin/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "bin/cargo-fmt",
+      "compose": [
+        {
+          "format": "tar.xz",
+          "strip": "rustc-{{VERSION}}-x86_64-unknown-linux-gnu/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustc-{{VERSION}}-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "cargo-{{VERSION}}-x86_64-unknown-linux-gnu/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/cargo-{{VERSION}}-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-x86_64-unknown-linux-gnu/rust-std-x86_64-unknown-linux-gnu",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rustfmt-{{VERSION}}-x86_64-unknown-linux-gnu/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustfmt-{{VERSION}}-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "clippy-{{VERSION}}-x86_64-unknown-linux-gnu/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "bin/cargo-fmt",
+      "compose": [
+        {
+          "format": "tar.xz",
+          "strip": "rustc-{{VERSION}}-aarch64-unknown-linux-gnu/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustc-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "cargo-{{VERSION}}-aarch64-unknown-linux-gnu/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/cargo-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-gnu/rust-std-aarch64-unknown-linux-gnu",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rustfmt-{{VERSION}}-aarch64-unknown-linux-gnu/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustfmt-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "clippy-{{VERSION}}-aarch64-unknown-linux-gnu/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "bin/cargo-fmt.exe",
+      "compose": [
+        {
+          "format": "tar.xz",
+          "strip": "rustc-{{VERSION}}-x86_64-pc-windows-msvc/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustc-{{VERSION}}-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "cargo-{{VERSION}}-x86_64-pc-windows-msvc/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/cargo-{{VERSION}}-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-x86_64-pc-windows-msvc/rust-std-x86_64-pc-windows-msvc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rustfmt-{{VERSION}}-x86_64-pc-windows-msvc/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustfmt-{{VERSION}}-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "clippy-{{VERSION}}-x86_64-pc-windows-msvc/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "bin/cargo-fmt.exe",
+      "compose": [
+        {
+          "format": "tar.xz",
+          "strip": "rustc-{{VERSION}}-aarch64-pc-windows-msvc/rustc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustc-{{VERSION}}-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "cargo-{{VERSION}}-aarch64-pc-windows-msvc/cargo",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/cargo-{{VERSION}}-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-aarch64-pc-windows-msvc/rust-std-aarch64-pc-windows-msvc",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rustfmt-{{VERSION}}-aarch64-pc-windows-msvc/rustfmt-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rustfmt-{{VERSION}}-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "clippy-{{VERSION}}-aarch64-pc-windows-msvc/clippy-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
