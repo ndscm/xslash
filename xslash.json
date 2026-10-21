@@ -1,1 +1,4 @@
-{}
+{
+  "python": "prebuilt/python/bin/python3.xslash",
+  "python3": "prebuilt/python/bin/python3.xslash"
+}
