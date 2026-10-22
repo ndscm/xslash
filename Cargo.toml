@@ -3,6 +3,22 @@ name = "xslash"
 version = "0.0.0"
 edition = "2024"
 
+[dependencies]
+anyhow.workspace = true
+blake3.workspace = true
+clap.workspace = true
+filetime.workspace = true
+flate2.workspace = true
+libc.workspace = true
+lzma-rs.workspace = true
+ruzstd.workspace = true
+rustix.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tar.workspace = true
+ureq.workspace = true
+zip.workspace = true
+
 [workspace]
 resolver = "3"
 members = [
