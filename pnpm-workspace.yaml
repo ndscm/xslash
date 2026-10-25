@@ -1,0 +1,4 @@
+allowBuilds:
+catalog:
+overrides:
+  # Avoid unexpected upgrade of direct dependencies
