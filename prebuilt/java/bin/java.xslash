@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "java",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "fb033ec33220b6b2873d894cc2946cd2dd2e04e6be920d23ea860bae69c295c3",
+      "size": 229081025,
+      "format": "tar.gz",
+      "path": "zulu27.30.107-ca-jdk27.0.1-macosx_x64/Contents/Home/bin/java",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-macosx_x64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "f026c8e6523a5ed76538f30f311de762a98a3e665df60512229f97e89ddc05da",
+      "size": 226708184,
+      "format": "tar.gz",
+      "path": "zulu27.30.107-ca-jdk27.0.1-macosx_aarch64/Contents/Home/bin/java",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-macosx_aarch64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "796558f6eb2e44b1cb84af01eb7ac36d7f925cb00c378a0851fb8b039a13348e",
+      "size": 233795143,
+      "format": "tar.gz",
+      "path": "zulu27.30.107-ca-jdk27.0.1-linux_x64/bin/java",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-linux_x64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "76f8f86d7682204f00f222ada70bb6db11e63d0d97db4bc4d71e5b598ed0a675",
+      "size": 233327076,
+      "format": "tar.gz",
+      "path": "zulu27.30.107-ca-jdk27.0.1-linux_aarch64/bin/java",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-linux_aarch64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "969fef06c19abf5eaac7ef63cb6e43e7520a43aee461982eb61782ed74dbffae",
+      "size": 231973751,
+      "format": "zip",
+      "path": "zulu27.30.107-ca-jdk27.0.1-win_x64/bin/java.exe",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-win_x64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "4d539d15a15688f82a26a54e93c93b8873bf6fef238400ac65f098ac830e52c8",
+      "size": 208397943,
+      "format": "zip",
+      "path": "zulu27.30.107-ca-jdk27.0.1-win_aarch64/bin/java.exe",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-win_aarch64.zip"
+        }
+      ]
+    }
+  }
+}

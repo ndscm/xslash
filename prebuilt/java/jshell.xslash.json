@@ -1,0 +1,59 @@
+{
+  "name": "jshell",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "zulu{{TAG}}-ca-jdk{{VERSION}}-macosx_x64/Contents/Home/bin/jshell",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu{{TAG}}-ca-jdk{{VERSION}}-macosx_x64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "zulu{{TAG}}-ca-jdk{{VERSION}}-macosx_aarch64/Contents/Home/bin/jshell",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu{{TAG}}-ca-jdk{{VERSION}}-macosx_aarch64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "zulu{{TAG}}-ca-jdk{{VERSION}}-linux_x64/bin/jshell",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu{{TAG}}-ca-jdk{{VERSION}}-linux_x64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "zulu{{TAG}}-ca-jdk{{VERSION}}-linux_aarch64/bin/jshell",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu{{TAG}}-ca-jdk{{VERSION}}-linux_aarch64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "zulu{{TAG}}-ca-jdk{{VERSION}}-win_x64/bin/jshell.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu{{TAG}}-ca-jdk{{VERSION}}-win_x64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "zulu{{TAG}}-ca-jdk{{VERSION}}-win_aarch64/bin/jshell.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://cdn.azul.com/zulu/bin/zulu{{TAG}}-ca-jdk{{VERSION}}-win_aarch64.zip"
+        }
+      ]
+    }
+  }
+}
