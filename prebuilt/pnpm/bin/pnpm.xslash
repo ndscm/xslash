@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "pnpm",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "dba6842018eecf27600286190b872faceca03db0dd8b12df5d548ad97c66f5db",
+      "size": 24588168,
+      "format": "tar.gz",
+      "path": "pnpm",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.15.0/pnpm-darwin-x64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "5dff037e29ddd0d65afe54863cabbcd307e00481e4d8b8b97055409c29c466e8",
+      "size": 21873403,
+      "format": "tar.gz",
+      "path": "pnpm",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.15.0/pnpm-darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "3c67f9e309cc834fceaeddc50e621645a0eede5726434e15aefb4bbbdf0084cd",
+      "size": 25369328,
+      "format": "tar.gz",
+      "path": "pnpm",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.15.0/pnpm-linux-x64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "73dae4742034e55ec780e18ce93e6d9154521bb892cfd4d69027683e4ed43db1",
+      "size": 22812334,
+      "format": "tar.gz",
+      "path": "pnpm",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.15.0/pnpm-linux-arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "cdab1ce1ee502d4a86bd810d5f3425f82b25692d43856a6dc615b9af52c48b8b",
+      "size": 23538358,
+      "format": "zip",
+      "path": "pnpm.exe",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.15.0/pnpm-win32-x64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "a677002cf982bcb936873862493024f8bf2a85a044935e5c7b0af7a7dec2cc62",
+      "size": 21631774,
+      "format": "zip",
+      "path": "pnpm.exe",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.15.0/pnpm-win32-arm64.zip"
+        }
+      ]
+    }
+  }
+}
