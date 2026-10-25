@@ -2,6 +2,8 @@
   "cargo-clippy": "prebuilt/rust/bin/cargo-clippy.xslash",
   "cargo-fmt": "prebuilt/rust/bin/cargo-fmt.xslash",
   "cargo": "prebuilt/rust/bin/cargo.xslash",
+  "go": "prebuilt/go/bin/go.xslash",
+  "gofmt": "prebuilt/go/bin/gofmt.xslash",
   "node": "prebuilt/node/bin/node.xslash",
   "npm": "prebuilt/node/bin/npm.xslash",
   "npx": "prebuilt/node/bin/npx.xslash",
