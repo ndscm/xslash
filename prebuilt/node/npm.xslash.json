@@ -1,0 +1,59 @@
+{
+  "name": "npm",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "node-{{TAG}}-darwin-x64/bin/npm",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-darwin-x64.tar.xz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "node-{{TAG}}-darwin-arm64/bin/npm",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-darwin-arm64.tar.xz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "node-{{TAG}}-linux-x64/bin/npm",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-linux-x64.tar.xz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "node-{{TAG}}-linux-arm64/bin/npm",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-linux-arm64.tar.xz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "node-{{TAG}}-win-x64/npm.cmd",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-win-x64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "node-{{TAG}}-win-arm64/npm.cmd",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-win-arm64.zip"
+        }
+      ]
+    }
+  }
+}
