@@ -5,6 +5,7 @@
   "node": "prebuilt/node/bin/node.xslash",
   "npm": "prebuilt/node/bin/npm.xslash",
   "npx": "prebuilt/node/bin/npx.xslash",
+  "pnpm": "prebuilt/pnpm/bin/pnpm.xslash",
   "python": "prebuilt/python/bin/python3.xslash",
   "python3": "prebuilt/python/bin/python3.xslash",
   "rust-gdb": "prebuilt/rust/bin/rust-gdb.xslash",
