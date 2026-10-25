@@ -1,6 +1,13 @@
 {
+  "cargo-clippy": "prebuilt/rust/bin/cargo-clippy.xslash",
+  "cargo-fmt": "prebuilt/rust/bin/cargo-fmt.xslash",
+  "cargo": "prebuilt/rust/bin/cargo.xslash",
   "python": "prebuilt/python/bin/python3.xslash",
   "python3": "prebuilt/python/bin/python3.xslash",
+  "rust-gdb": "prebuilt/rust/bin/rust-gdb.xslash",
+  "rustc": "prebuilt/rust/bin/rustc.xslash",
+  "rustdoc": "prebuilt/rust/bin/rustdoc.xslash",
+  "rustfmt": "prebuilt/rust/bin/rustfmt.xslash",
   "uv": "prebuilt/uv/bin/uv.xslash",
   "uvx": "prebuilt/uv/bin/uvx.xslash"
 }
