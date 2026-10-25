@@ -1,0 +1,59 @@
+{
+  "name": "go",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "go/bin/go",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go{{TAG}}.darwin-amd64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "go/bin/go",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go{{TAG}}.darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "go/bin/go",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go{{TAG}}.linux-amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "go/bin/go",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go{{TAG}}.linux-arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "go/bin/go.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go{{TAG}}.windows-amd64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "go/bin/go.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go{{TAG}}.windows-arm64.zip"
+        }
+      ]
+    }
+  }
+}
