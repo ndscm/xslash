@@ -163,17 +163,24 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  'ndscm@catalog:': 26.10.26
   'prettier@catalog:': 3.8.3
 
 importers:
 
   .:
     devDependencies:
+      ndscm:
+        specifier: 26.10.26
+        version: 26.10.26
       prettier:
         specifier: 3.8.3
         version: 3.8.3
 
 packages:
+
+  ndscm@26.10.26:
+    resolution: {integrity: sha512-p6WdBMrgeCm+1CbgvI7wJp2jmI+iZSlRjONPudEO3JeUUcKg9CA1xoY8Q9GMbFeUMGIncjQzeU/wkE1x0IDDxQ==}
 
   prettier@3.8.3:
     resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
@@ -181,5 +188,7 @@ packages:
     hasBin: true
 
 snapshots:
+
+  ndscm@26.10.26: {}
 
   prettier@3.8.3: {}
