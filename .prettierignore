@@ -1,0 +1,5 @@
+*_pb.d.ts
+*_pb.js
+dist
+node_modules
+pnpm-lock.yaml
