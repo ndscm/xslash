@@ -1,4 +1,6 @@
 allowBuilds:
 catalog:
+  "prettier": "^3.8.3"
 overrides:
   # Avoid unexpected upgrade of direct dependencies
+  "prettier@catalog:": "3.8.3"
