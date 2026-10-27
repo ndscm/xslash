@@ -51,6 +51,24 @@
         },
         {
           "format": "tar.xz",
+          "strip": "rust-src-{{VERSION}}/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-src-{{VERSION}}.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-analyzer-{{VERSION}}-x86_64-apple-darwin/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-analyzer-{{VERSION}}-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
           "strip": "llvm-tools-{{VERSION}}-x86_64-apple-darwin/llvm-tools-preview",
           "providers": [
             {
@@ -132,6 +150,24 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-src-{{VERSION}}/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-src-{{VERSION}}.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-analyzer-{{VERSION}}-aarch64-apple-darwin/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-analyzer-{{VERSION}}-aarch64-apple-darwin.tar.xz"
             }
           ]
         },
@@ -223,6 +259,24 @@
         },
         {
           "format": "tar.xz",
+          "strip": "rust-src-{{VERSION}}/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-src-{{VERSION}}.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-analyzer-{{VERSION}}-x86_64-unknown-linux-gnu/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-analyzer-{{VERSION}}-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
           "strip": "llvm-tools-{{VERSION}}-x86_64-unknown-linux-gnu/llvm-tools-preview",
           "providers": [
             {
@@ -304,6 +358,24 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-src-{{VERSION}}/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-src-{{VERSION}}.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-analyzer-{{VERSION}}-aarch64-unknown-linux-gnu/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-analyzer-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
             }
           ]
         },
@@ -395,6 +467,24 @@
         },
         {
           "format": "tar.xz",
+          "strip": "rust-src-{{VERSION}}/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-src-{{VERSION}}.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-analyzer-{{VERSION}}-x86_64-pc-windows-msvc/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-analyzer-{{VERSION}}-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
           "strip": "llvm-tools-{{VERSION}}-x86_64-pc-windows-msvc/llvm-tools-preview",
           "providers": [
             {
@@ -449,6 +539,24 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/{{TAG}}/clippy-{{VERSION}}-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-src-{{VERSION}}/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-src-{{VERSION}}.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-analyzer-{{VERSION}}-aarch64-pc-windows-msvc/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-analyzer-{{VERSION}}-aarch64-pc-windows-msvc.tar.xz"
             }
           ]
         },

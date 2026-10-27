@@ -68,6 +68,30 @@
         },
         {
           "hash": "blake3",
+          "digest": "207f82fcbfc86e1021c9372ae7549c5e1111101e56f1c1d45bfd9d1027907d51",
+          "size": 5863216,
+          "format": "tar.xz",
+          "strip": "rust-src-1.99.1/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-src-1.99.1.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "1426e801b03108d9e5430cd647d8775adac95f624d7f4d1fe27437d76f6a0efa",
+          "size": 9150884,
+          "format": "tar.xz",
+          "strip": "rust-analyzer-1.99.1-x86_64-apple-darwin/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-analyzer-1.99.1-x86_64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
           "digest": "c9380bb57bc785d5f54396a95e5a54fc1d7c12590f1bca623db1fb71ffd77bec",
           "size": 29744032,
           "format": "tar.xz",
@@ -176,6 +200,30 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-aarch64-apple-darwin.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "207f82fcbfc86e1021c9372ae7549c5e1111101e56f1c1d45bfd9d1027907d51",
+          "size": 5863216,
+          "format": "tar.xz",
+          "strip": "rust-src-1.99.1/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-src-1.99.1.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "fcb4e9130a36f3b06cb5bb5fc22661ba37c1fda575a89368ab0886710cae0ba0",
+          "size": 8086732,
+          "format": "tar.xz",
+          "strip": "rust-analyzer-1.99.1-aarch64-apple-darwin/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-analyzer-1.99.1-aarch64-apple-darwin.tar.xz"
             }
           ]
         },
@@ -294,6 +342,30 @@
         },
         {
           "hash": "blake3",
+          "digest": "207f82fcbfc86e1021c9372ae7549c5e1111101e56f1c1d45bfd9d1027907d51",
+          "size": 5863216,
+          "format": "tar.xz",
+          "strip": "rust-src-1.99.1/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-src-1.99.1.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "f172a242635eb0962c7aa9e156b6d11f86b0126ed24ed08898887530f86d79a1",
+          "size": 9493928,
+          "format": "tar.xz",
+          "strip": "rust-analyzer-1.99.1-x86_64-unknown-linux-gnu/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-analyzer-1.99.1-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
           "digest": "1696390fb1b06ef682c832acbce1108c157a0975f6da8c3ff8a8d44c3273d733",
           "size": 41066868,
           "format": "tar.xz",
@@ -402,6 +474,30 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "207f82fcbfc86e1021c9372ae7549c5e1111101e56f1c1d45bfd9d1027907d51",
+          "size": 5863216,
+          "format": "tar.xz",
+          "strip": "rust-src-1.99.1/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-src-1.99.1.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "c3a8f763575977b9d1820a294983d10a7c8f59db8b11d896bece1e60980fffab",
+          "size": 8522296,
+          "format": "tar.xz",
+          "strip": "rust-analyzer-1.99.1-aarch64-unknown-linux-gnu/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-analyzer-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
             }
           ]
         },
@@ -520,6 +616,30 @@
         },
         {
           "hash": "blake3",
+          "digest": "207f82fcbfc86e1021c9372ae7549c5e1111101e56f1c1d45bfd9d1027907d51",
+          "size": 5863216,
+          "format": "tar.xz",
+          "strip": "rust-src-1.99.1/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-src-1.99.1.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "e76bed232b276dc9e616201bde93decc4e3affbe13efe8639658041bcdae1161",
+          "size": 9812772,
+          "format": "tar.xz",
+          "strip": "rust-analyzer-1.99.1-x86_64-pc-windows-msvc/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-analyzer-1.99.1-x86_64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
           "digest": "92f7cfee18d843f532a322b68f8c1c9140e80f2fb177c7eb75d82a89256482b4",
           "size": 49616272,
           "format": "tar.xz",
@@ -592,6 +712,30 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/2026-10-15/clippy-1.99.1-aarch64-pc-windows-msvc.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "207f82fcbfc86e1021c9372ae7549c5e1111101e56f1c1d45bfd9d1027907d51",
+          "size": 5863216,
+          "format": "tar.xz",
+          "strip": "rust-src-1.99.1/rust-src",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-src-1.99.1.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "bf48b4e7f093242847c880337405f4130e2cdf84d566c7508e75c9bbb4741b58",
+          "size": 9907780,
+          "format": "tar.xz",
+          "strip": "rust-analyzer-1.99.1-aarch64-pc-windows-msvc/rust-analyzer-preview",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-analyzer-1.99.1-aarch64-pc-windows-msvc.tar.xz"
             }
           ]
         },
