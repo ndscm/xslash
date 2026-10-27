@@ -4,6 +4,7 @@
 export type XslashCompat = {
   name: string
   final?: boolean
+  actual?: string
   platforms?: {
     [platform: string]:
       | {

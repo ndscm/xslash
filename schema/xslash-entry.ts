@@ -3,11 +3,18 @@
  * per platform. A leading `#!` shebang line is stripped before the JSON is parsed.
  */
 export type XslashEntry = {
-  /** Logical name; used as arg0 on exec and as the lookup key in `xslash.json`. */
+  /** Logical name; the lookup key in `xslash.json`. */
   name: string
 
   /** If true, use this entry directly and skip project-level resolution. */
   final?: boolean
+
+  /**
+   * Another entry file this one resolves to, its `platforms` replacing this
+   * entry's. Absolute, or relative to this file's dir. The hook bakes it into
+   * shims so they resolve from any cwd.
+   */
+  actual?: string
 
   /**
    * Platform blocks keyed by `<kernel>-<arch>` — kernel `linux`/`darwin`/

@@ -5,6 +5,9 @@
       "additionalProperties": false,
       "description": "The actual xslash parser used for dotslash compatibility.",
       "properties": {
+        "actual": {
+          "type": "string"
+        },
         "final": {
           "type": "boolean"
         },
@@ -123,12 +126,16 @@
       "additionalProperties": false,
       "description": "A parsed xslash entry: JSON describing where to download a prebuilt executable per platform. A leading `#!` shebang line is stripped before the JSON is parsed.",
       "properties": {
+        "actual": {
+          "description": "Another entry file this one resolves to, its `platforms` replacing this entry's. Absolute, or relative to this file's dir. The hook bakes it into shims so they resolve from any cwd.",
+          "type": "string"
+        },
         "final": {
           "description": "If true, use this entry directly and skip project-level resolution.",
           "type": "boolean"
         },
         "name": {
-          "description": "Logical name; used as arg0 on exec and as the lookup key in `xslash.json`.",
+          "description": "Logical name; the lookup key in `xslash.json`.",
           "type": "string"
         },
         "platforms": {
