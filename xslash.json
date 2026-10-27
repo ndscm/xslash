@@ -1,6 +1,7 @@
 {
   "cargo-clippy": "prebuilt/rust/bin/cargo-clippy.xslash",
   "cargo-fmt": "prebuilt/rust/bin/cargo-fmt.xslash",
+  "cargo-zigbuild": "prebuilt/cargo-zigbuild/bin/cargo-zigbuild.xslash",
   "cargo": "prebuilt/rust/bin/cargo.xslash",
   "go": "prebuilt/go/bin/go.xslash",
   "gofmt": "prebuilt/go/bin/gofmt.xslash",
