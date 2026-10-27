@@ -386,6 +386,11 @@ fn hook(args: HookArgs) -> Result<()> {
 // main
 // ---------------------------------------------------------------------------
 
+/// The `xslash-helper` entry baked in at build time (see `build.rs`), used by
+/// `xslash --` to resolve and run the helper instead of trusting `$PATH`. Empty
+/// on non-release builds, which fall back to `$PATH`.
+const HELPER_ENTRY: &str = include_str!(concat!(env!("OUT_DIR"), "/xslash-helper.xslash"));
+
 fn run() -> Result<()> {
     let args: Vec<OsString> = ::std::env::args_os().collect();
     let rest = &args[1..];
@@ -406,9 +411,16 @@ fn run() -> Result<()> {
             }
             Some("--hook") => hook(HookArgs::parse(&rest[1..])?),
             Some("--") => {
-                // TODO: use an xslash entry to run xslash-helper.
+                // Use the baked-in entry if present (release builds), else fall
+                // back to running xslash-helper from `$PATH`.
+                let forward = &rest[1..];
+                if !HELPER_ENTRY.trim().is_empty() {
+                    let entry = XslashEntry::parse(HELPER_ENTRY)
+                        .context("parsing the embedded xslash-helper entry")?;
+                    return ::xslash::execv_final(&entry, OsStr::new("xslash-helper"), forward);
+                }
                 use ::std::os::unix::process::CommandExt;
-                let err = Command::new("xslash-helper").args(&rest[1..]).exec();
+                let err = Command::new("xslash-helper").args(forward).exec();
                 Err(err).context("running xslash-helper")
             }
             _ => execv_entry(first, &rest[1..]),
