@@ -19,5 +19,6 @@
   "rustdoc": "prebuilt/rust/bin/rustdoc.xslash",
   "rustfmt": "prebuilt/rust/bin/rustfmt.xslash",
   "uv": "prebuilt/uv/bin/uv.xslash",
-  "uvx": "prebuilt/uv/bin/uvx.xslash"
+  "uvx": "prebuilt/uv/bin/uvx.xslash",
+  "zig": "prebuilt/zig/bin/zig.xslash"
 }
