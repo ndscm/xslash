@@ -19,6 +19,11 @@ tar.workspace = true
 ureq.workspace = true
 zip.workspace = true
 
+[build-dependencies]
+blake3.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
 [workspace]
 resolver = "3"
 members = [
