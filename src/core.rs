@@ -295,7 +295,8 @@ impl Core {
         let (key, platform) = entry.select_platform(platform_key)?;
         let metadata = XslashEntry {
             name: entry.name.clone(),
-            is_final: entry.is_final,
+            is_final: None,
+            actual: None,
             platforms: BTreeMap::from([(key, platform.clone())]),
         };
 
@@ -402,7 +403,8 @@ impl Core {
         // the same name-keyed schema as the download sidecar.
         let metadata = XslashEntry {
             name: entry.name.clone(),
-            is_final: entry.is_final,
+            is_final: None,
+            actual: None,
             platforms: BTreeMap::from([(platform_key.to_string(), platform.clone())]),
         };
         merge_metadata(&lock.metadata, &metadata).ok();
@@ -561,9 +563,8 @@ impl Core {
             // don't clobber each other.
             let entry = XslashEntry {
                 name: name.clone(),
-                // The cache sidecar records the artifact, not a resolution
-                // target, so it's never final.
-                is_final: false,
+                is_final: None,
+                actual: None,
                 platforms: BTreeMap::from([(platform_key.clone(), platform.clone())]),
             };
             for src in platform.components()? {

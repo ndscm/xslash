@@ -382,20 +382,40 @@ impl Platform {
 /// A parsed xslash entry.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct XslashEntry {
-    /// Logical name; used as arg0 on exec and as the lookup key in xslash.json.
+    /// Logical name; the lookup key in xslash.json.
     pub name: String,
 
-    /// If true, use this entry directly and skip project-level resolution.
-    #[serde(default, rename = "final")]
-    pub is_final: bool,
+    /// If `Some(true)`, use this entry directly and skip project-level
+    /// resolution. Absent or `Some(false)` both mean not final.
+    #[serde(default, rename = "final", skip_serializing_if = "Option::is_none")]
+    pub is_final: Option<bool>,
+
+    /// The entry file this one resolves to, its `platforms` replacing this
+    /// entry's. Absolute, or relative to this file's directory; absent or empty
+    /// means no redirect. The hook bakes it into shims so they resolve from any
+    /// cwd.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actual: Option<String>,
 
     /// Empty for a bare name-only entry (e.g. a directory-hook shim) that defers
     /// to project-level resolution for the real platform blocks.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub platforms: BTreeMap<String, Platform>,
 }
 
 impl XslashEntry {
+    /// Whether this entry is used directly, skipping project-level resolution.
+    /// Absent and `Some(false)` are both treated as not final.
+    pub fn is_final(&self) -> bool {
+        self.is_final == Some(true)
+    }
+
+    /// The redirect target, or `None` when there is none: both an absent and an
+    /// empty `actual` mean no redirect.
+    pub fn actual(&self) -> Option<&str> {
+        self.actual.as_deref().filter(|a| !a.is_empty())
+    }
+
     /// Parse an xslash entry from its file contents, tolerating a leading
     /// shebang.
     pub fn parse(content: &str) -> Result<XslashEntry> {
