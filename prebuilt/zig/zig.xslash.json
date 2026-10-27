@@ -1,0 +1,59 @@
+{
+  "name": "zig",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "zig-x86_64-macos-{{TAG}}/zig",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/{{TAG}}/zig-x86_64-macos-{{TAG}}.tar.xz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "zig-aarch64-macos-{{TAG}}/zig",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/{{TAG}}/zig-aarch64-macos-{{TAG}}.tar.xz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "zig-x86_64-linux-{{TAG}}/zig",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/{{TAG}}/zig-x86_64-linux-{{TAG}}.tar.xz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "zig-aarch64-linux-{{TAG}}/zig",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/{{TAG}}/zig-aarch64-linux-{{TAG}}.tar.xz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "zig-x86_64-windows-{{TAG}}/zig.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/{{TAG}}/zig-x86_64-windows-{{TAG}}.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "zig-aarch64-windows-{{TAG}}/zig.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/{{TAG}}/zig-aarch64-windows-{{TAG}}.zip"
+        }
+      ]
+    }
+  }
+}

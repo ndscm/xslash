@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "zig",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "0afe925cbfd558c31b4afe260948d507530a3335a08739c57b494a8e67c37be5",
+      "size": 59317572,
+      "format": "tar.xz",
+      "path": "zig-x86_64-macos-0.17.0/zig",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/0.17.0/zig-x86_64-macos-0.17.0.tar.xz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "f56869e4ef8df7b606b332f9fdfd20f723a100991e515057c69bca27f8b55333",
+      "size": 53985220,
+      "format": "tar.xz",
+      "path": "zig-aarch64-macos-0.17.0/zig",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/0.17.0/zig-aarch64-macos-0.17.0.tar.xz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "665078f7724c9c694e920423918c08ed3577f92153119f094b5b5afdd1a2b603",
+      "size": 57332648,
+      "format": "tar.xz",
+      "path": "zig-x86_64-linux-0.17.0/zig",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "dcea5a3d8817c3c872417315a56345e5745221ebd70b249cd6ada4643c5cc113",
+      "size": 52877280,
+      "format": "tar.xz",
+      "path": "zig-aarch64-linux-0.17.0/zig",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/0.17.0/zig-aarch64-linux-0.17.0.tar.xz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "77c4d35a3865a86c7726d80d670f8211c0f4bdf550435db0a75790bc8b5cd880",
+      "size": 100268137,
+      "format": "zip",
+      "path": "zig-x86_64-windows-0.17.0/zig.exe",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/0.17.0/zig-x86_64-windows-0.17.0.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "094055f60b09f1b1636320eb52b239a4fb32c206dec2217c96006524e9dbc35e",
+      "size": 95992853,
+      "format": "zip",
+      "path": "zig-aarch64-windows-0.17.0/zig.exe",
+      "providers": [
+        {
+          "url": "https://ziglang.org/download/0.17.0/zig-aarch64-windows-0.17.0.zip"
+        }
+      ]
+    }
+  }
+}
