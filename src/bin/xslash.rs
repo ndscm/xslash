@@ -15,8 +15,6 @@ use ::std::collections::BTreeMap;
 use ::std::collections::BTreeSet;
 use ::std::ffi::OsStr;
 use ::std::ffi::OsString;
-use ::std::fs::File;
-use ::std::io::Write;
 use ::std::path::Path;
 use ::std::path::PathBuf;
 use ::std::process::Command;
@@ -93,28 +91,27 @@ fn find_project_entry(name: &str) -> Result<Option<PathBuf>> {
 }
 
 fn execv_entry(entry_path: &OsStr, forward: &[OsString]) -> Result<()> {
-    let display = Path::new(entry_path).display().to_string();
-    let contents = ::std::fs::read_to_string(entry_path)
-        .with_context(|| format!("reading entry {display}"))?;
-    let mut entry = XslashEntry::parse(&contents).with_context(|| format!("in entry {display}"))?;
+    let path = Path::new(entry_path);
+    let display = path.display().to_string();
+    let contents =
+        ::std::fs::read_to_string(path).with_context(|| format!("reading entry {display}"))?;
+    let entry = XslashEntry::parse(&contents).with_context(|| format!("in entry {display}"))?;
 
-    // A non-final entry defers to a project-level xslash.json when one maps its
-    // name, so project tooling (git rebase --exec, claude, ...) picks up the
-    // project's pinned executable.
-    if !entry.is_final
+    let resolved = if !entry.is_final()
         && let Some(path) = find_project_entry(&entry.name)?
     {
-        let contents = ::std::fs::read_to_string(&path)
-            .with_context(|| format!("reading {}", path.display()))?;
-        entry = XslashEntry::parse(&contents)
-            .with_context(|| format!("in entry {}", path.display()))?;
-    }
+        ::xslash::read_actual(&path)?
+    } else if entry.actual().is_some() {
+        ::xslash::read_actual(path)?
+    } else {
+        entry
+    };
 
     // The policy above has resolved which entry to run; execv_final runs it
     // directly without re-consulting the `final` field. argv[0] stays the path
     // the launcher was invoked as, so the binary behaves exactly as a symlink
     // in its place would (e.g. `python` vs `python3` sharing one entry).
-    xslash::execv_final(&entry, entry_path, forward)
+    ::xslash::execv_final(&resolved, entry_path, forward)
 }
 
 // ---------------------------------------------------------------------------
@@ -199,63 +196,62 @@ fn sh_quote(s: &str) -> String {
     out
 }
 
-/// Reconcile the shim dir for `configs` (the `xslash.json` files in effect,
-/// root -> cwd), keyed on `project_dir`, against their mapped names, returning
-/// the shim dir's path.
+/// Reconcile the shim dir for `configs` (root -> cwd), keyed on `project_dir`,
+/// returning the shim dir's path and a digest of the resolved name -> entry-path
+/// map.
 ///
-/// Announces the config set and each shim change on stderr (unless `silent`).
-/// The shim files and the `<digest>.json` record are updated in place, so an
-/// unchanged project is a no-op.
-fn reconcile_hook_dir(project_dir: &Path, configs: &[PathBuf], silent: bool) -> Result<String> {
-    // Read every config once: the union of mapped names (for the shims) and a
-    // path -> content-digest map (to tell whether the shim dir is still
-    // current). A shim needs only the name - a bare name-only entry xslash
-    // resolves against the directory config at runtime.
-    let mut names: BTreeSet<String> = BTreeSet::new();
-    let mut digests: BTreeMap<String, String> = BTreeMap::new();
+/// Does nothing when `old_digest` (carried from the previous prompt via
+/// `XSLASH_HOOK_DIGEST`) still matches and the dir exists; otherwise rebuilds the
+/// shims, announcing changes on stderr unless `silent`.
+fn reconcile_hook_dir(
+    project_dir: &Path,
+    configs: &[PathBuf],
+    old_digest: Option<&str>,
+    silent: bool,
+) -> Result<(String, String)> {
+    // Build the name -> resolved entry path map the shims bake into `actual`.
+    // `configs` runs root -> cwd, so inserting in order lets a nearer config
+    // override an outer one (nearest wins, as at runtime).
+    let mut resolved: BTreeMap<String, String> = BTreeMap::new();
     for json in configs {
         let contents = ::std::fs::read_to_string(json)
             .with_context(|| format!("reading {}", json.display()))?;
         let entries: BTreeMap<String, String> = ::serde_json::from_str(&contents)
             .with_context(|| format!("parsing {}", json.display()))?;
-        names.extend(entries.into_keys());
-        let digest = Hash::Blake3.hash_bytes(contents.as_bytes())?;
-        digests.insert(json.display().to_string(), digest);
+        let dir = json.parent().unwrap_or_else(|| Path::new("."));
+        for (name, rel) in entries {
+            resolved.insert(name, dir.join(rel).display().to_string());
+        }
     }
+
+    // Judge freshness by one digest carried in the environment (direnv style):
+    // blake3 over the resolved map as compact, sorted-key JSON. Any added,
+    // removed, or repointed name moves it; an edit that leaves the map identical
+    // does not.
+    let serialized = ::serde_json::to_string(&resolved).context("serializing hook map")?;
+    let digest = Hash::Blake3.hash_bytes(serialized.as_bytes())?;
 
     // Key the hook dir on the project dir - the project root we're inside.
     let cache = Cache::from_env(false)?;
     let hook_dir = cache.hook_dir(project_dir)?;
-    let metadata = hook_dir.with_extension("json");
 
-    // The hook runs every prompt and a config can change without a `cd`, so
-    // judge freshness by content: reuse the shim dir when it exists and the
-    // recorded `<digest>.json` still matches every config. Any added, removed,
-    // or edited config regenerates.
-    let recorded: Option<BTreeMap<String, String>> = ::std::fs::read(&metadata)
-        .ok()
-        .and_then(|bytes| ::serde_json::from_slice(&bytes).ok());
-
-    // Announce (direnv-style, on stderr) which configs are now in effect when
-    // the *set* of config files changes: first load, or one added or removed.
-    // A config merely edited in place keeps the same keys and stays quiet.
-    let config_set_changed = match &recorded {
-        None => true,
-        Some(recorded) => !recorded.keys().eq(digests.keys()),
-    };
-    if config_set_changed && !silent {
-        for config in digests.keys() {
-            eprintln!("xslash: load {config}");
-        }
-    }
-
-    if !(hook_dir.is_dir() && recorded.as_ref() == Some(&digests)) {
+    // Reconcile only when the digest moved, or the dir is missing (e.g. the cache
+    // was cleared): otherwise the shims already match and this is a no-op.
+    if !(hook_dir.is_dir() && old_digest == Some(digest.as_str())) {
         ::std::fs::create_dir_all(&hook_dir)
             .with_context(|| format!("creating {}", hook_dir.display()))?;
 
-        // Reconcile against the configs' names instead of rebuilding wholesale:
-        // add a shim for each newly-mapped name, remove one for each name no
+        // Announce (direnv-style, on stderr) which configs are now in effect.
+        if !silent {
+            for config in configs {
+                eprintln!("xslash: load {}", config.display());
+            }
+        }
+
+        // Reconcile against the mapped names instead of rebuilding wholesale: add
+        // or refresh a shim for each mapped name, remove one for each name no
         // longer mapped, leaving unchanged shims (and anyone mid-exec) untouched.
+        let names: BTreeSet<String> = resolved.keys().cloned().collect();
         let mut existing: BTreeSet<String> = BTreeSet::new();
         for entry in ::std::fs::read_dir(&hook_dir)
             .with_context(|| format!("reading {}", hook_dir.display()))?
@@ -265,16 +261,26 @@ fn reconcile_hook_dir(project_dir: &Path, configs: &[PathBuf], silent: bool) -> 
             }
         }
 
-        for name in names.difference(&existing) {
-            let shim = hook_dir.join(name);
-            let entry = ::serde_json::to_string(&BTreeMap::from([("name", name.as_str())]))?;
-            let script = format!("#!/usr/bin/env xslash\n{entry}\n");
+        for (name, actual) in &resolved {
+            let shim_path = hook_dir.join(name);
+            let shim_entry = ::serde_json::to_string_pretty(&XslashEntry {
+                name: name.clone(),
+                is_final: None,
+                actual: Some(actual.clone()),
+                platforms: BTreeMap::new(),
+            })?;
+            let script = format!("#!/usr/bin/env xslash\n{shim_entry}\n");
+            // Write only when the shim differs from disk, leaving unchanged shims
+            // (and anyone mid-exec) untouched while refreshing a repointed `actual`.
+            if ::std::fs::read_to_string(&shim_path).ok().as_deref() == Some(script.as_str()) {
+                continue;
+            }
             if !silent {
                 eprintln!("xslash: inject {name}");
             }
-            ::std::fs::write(&shim, script)
-                .with_context(|| format!("writing {}", shim.display()))?;
-            Chmod::chmod(&shim, Chmod::add_executable)?;
+            ::std::fs::write(&shim_path, &script)
+                .with_context(|| format!("writing {}", shim_path.display()))?;
+            Chmod::chmod(&shim_path, Chmod::add_executable)?;
         }
 
         for name in existing.difference(&names) {
@@ -285,17 +291,9 @@ fn reconcile_hook_dir(project_dir: &Path, configs: &[PathBuf], silent: bool) -> 
             ::std::fs::remove_file(&shim)
                 .with_context(|| format!("removing {}", shim.display()))?;
         }
-
-        // Record the digests last, so a crash mid-reconcile leaves a stale or
-        // absent sidecar that forces the reconcile to run again next time.
-        let mut file =
-            File::create(&metadata).with_context(|| format!("writing {}", metadata.display()))?;
-        ::serde_json::to_writer_pretty(&mut file, &digests).context("serializing hook metadata")?;
-        file.write_all(b"\n")
-            .with_context(|| format!("writing {}", metadata.display()))?;
     }
 
-    Ok(hook_dir.display().to_string())
+    Ok((hook_dir.display().to_string(), digest))
 }
 
 fn hook(args: HookArgs) -> Result<()> {
@@ -316,10 +314,25 @@ fn hook(args: HookArgs) -> Result<()> {
     let cwd = ::std::env::current_dir().context("getting current directory")?;
     let (project_dir, configs) = find_ancient_configs(&cwd);
 
+    // The digest reconciled on the previous prompt rides along in the
+    // environment (direnv style), so the "did the resolved map change?" decision
+    // lives in the binary, not the shell.
+    let old_hook_digest = ::std::env::var("XSLASH_HOOK_DIGEST")
+        .ok()
+        .filter(|s| !s.is_empty());
+
     // Reconcile the current project's shim dir, or no dir when not in a project.
-    let new_hook_dir = match &project_dir {
-        Some(project_dir) => Some(reconcile_hook_dir(project_dir, &configs, args.silent)?),
-        None => None,
+    let (new_hook_dir, new_hook_digest) = match &project_dir {
+        Some(project_dir) => {
+            let (dir, digest) = reconcile_hook_dir(
+                project_dir,
+                &configs,
+                old_hook_digest.as_deref(),
+                args.silent,
+            )?;
+            (Some(dir), Some(digest))
+        }
+        None => (None, None),
     };
 
     // The previously hooked dir rides along in the environment (direnv style),
@@ -353,6 +366,16 @@ fn hook(args: HookArgs) -> Result<()> {
             None => {
                 println!("unset XSLASH_HOOK_PATH");
             }
+        }
+    }
+
+    // Carry the digest forward for the next prompt. A config change that repoints
+    // an entry without moving the dir leaves PATH untouched but still moves this
+    // digest.
+    if new_hook_digest != old_hook_digest {
+        match &new_hook_digest {
+            Some(digest) => println!("export XSLASH_HOOK_DIGEST={}", sh_quote(digest)),
+            None => println!("unset XSLASH_HOOK_DIGEST"),
         }
     }
 
