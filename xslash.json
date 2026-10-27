@@ -15,6 +15,7 @@
   "pnpm": "prebuilt/pnpm/bin/pnpm.xslash",
   "python": "prebuilt/python/bin/python3.xslash",
   "python3": "prebuilt/python/bin/python3.xslash",
+  "rust-analyzer": "prebuilt/rust/bin/rust-analyzer.xslash",
   "rust-gdb": "prebuilt/rust/bin/rust-gdb.xslash",
   "rustc": "prebuilt/rust/bin/rustc.xslash",
   "rustdoc": "prebuilt/rust/bin/rustdoc.xslash",
