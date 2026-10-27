@@ -59,10 +59,16 @@ for platform in "${platforms[@]}"; do
   # zigbuild takes the version-suffixed form; the binary lands under the plain triple.
   rust_target="${zig_target%%.*}"
 
-  cargo zigbuild --release --target "${zig_target}"
+  # Two-pass build: compile xslash-helper first so build.rs can hash it, then
+  # compile xslash with that hash baked into its embedded helper entry.
+  cargo zigbuild --release --target "${zig_target}" --bin xslash-helper
+
+  cp -f "./target/${rust_target}/release/xslash-helper" "./.cache/release/xslash-helper-${kernel}-${arch}"
+
+  XSLASH_HELPER_BIN="./.cache/release/xslash-helper-${kernel}-${arch}" \
+    cargo zigbuild --release --target "${zig_target}" --bin xslash
 
   cp -f "./target/${rust_target}/release/xslash" "./.cache/release/xslash-${kernel}-${arch}"
-  cp -f "./target/${rust_target}/release/xslash-helper" "./.cache/release/xslash-helper-${kernel}-${arch}"
 done
 
 cargo publish --allow-dirty
