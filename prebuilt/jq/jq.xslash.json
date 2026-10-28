@@ -1,0 +1,53 @@
+{
+  "name": "jq",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/{{TAG}}/jq-macos-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/{{TAG}}/jq-macos-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/{{TAG}}/jq-linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/{{TAG}}/jq-linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "jq.exe",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/{{TAG}}/jq-windows-amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "jq.exe",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/{{TAG}}/jq-windows-arm64.exe"
+        }
+      ]
+    }
+  }
+}
