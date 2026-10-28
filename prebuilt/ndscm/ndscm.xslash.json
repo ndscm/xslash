@@ -1,0 +1,41 @@
+{
+  "name": "ndscm",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "ndscm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/{{TAG}}/ndscm-darwin-amd64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "ndscm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/{{TAG}}/ndscm-darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "ndscm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/{{TAG}}/ndscm-linux-amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "ndscm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/{{TAG}}/ndscm-linux-arm64.tar.gz"
+        }
+      ]
+    }
+  }
+}
