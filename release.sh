@@ -67,6 +67,7 @@ platforms=(
   "linux arm64 aarch64-unknown-linux-musl"
 )
 
+rm -r "./.cache/release" || true
 mkdir -p "./.cache/release"
 
 for platform in "${platforms[@]}"; do
@@ -89,4 +90,20 @@ for platform in "${platforms[@]}"; do
   create_sha256 "./.cache/release/xslash-${kernel}-${arch}"
 done
 
-cargo publish --allow-dirty
+# Publish the GitHub release and attach every built artifact. If the release
+# already exists, leave it untouched and exit.
+if gh release view "${release_tag}" >/dev/null 2>&1; then
+  printf "release '%s' already exists, nothing to do\n" "${release_tag}"
+  exit 0
+fi
+
+gh release create "${release_tag}" ./.cache/release/* \
+  --title "${release_tag}" \
+  --notes "" \
+  --draft
+
+# The GitHub release is staged as a draft and crates.io publishes are permanent,
+# so leave both final steps to the user once they've reviewed the draft.
+printf "\ndraft release '%s' created. to finish publishing, run:\n" "${release_tag}"
+printf "  gh release edit '%s' --draft=false\n" "${release_tag}"
+printf "  cargo publish --allow-dirty\n"
