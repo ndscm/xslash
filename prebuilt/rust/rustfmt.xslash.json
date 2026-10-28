@@ -96,10 +96,28 @@
         },
         {
           "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
           "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-gnu/rust-std-aarch64-unknown-linux-gnu",
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }
@@ -200,10 +218,28 @@
         },
         {
           "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
           "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-gnu/rust-std-aarch64-unknown-linux-gnu",
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }
@@ -304,10 +340,28 @@
         },
         {
           "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
           "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-gnu/rust-std-aarch64-unknown-linux-gnu",
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }
@@ -412,6 +466,24 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "format": "tar.xz",
+          "strip": "rust-std-{{VERSION}}-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/{{TAG}}/rust-std-{{VERSION}}-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }

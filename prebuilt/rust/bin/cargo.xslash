@@ -128,6 +128,18 @@
         },
         {
           "hash": "blake3",
+          "digest": "1c9a0b7b2b4e57c58b621e5f71e2cbb18fe80f6a4009ce088cc84b4525d9854b",
+          "size": 41325128,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
           "digest": "5da85da685396de204826bc44a0c5c0f814fe50d6cf81728ad12c100bf365afa",
           "size": 31796492,
           "format": "tar.xz",
@@ -135,6 +147,18 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "706a5bc47c6172f20a948497084c50c1a58657c135dfc3d2a3c04edf223e9996",
+          "size": 31162764,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }
@@ -265,6 +289,18 @@
         },
         {
           "hash": "blake3",
+          "digest": "1c9a0b7b2b4e57c58b621e5f71e2cbb18fe80f6a4009ce088cc84b4525d9854b",
+          "size": 41325128,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
           "digest": "5da85da685396de204826bc44a0c5c0f814fe50d6cf81728ad12c100bf365afa",
           "size": 31796492,
           "format": "tar.xz",
@@ -272,6 +308,18 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "706a5bc47c6172f20a948497084c50c1a58657c135dfc3d2a3c04edf223e9996",
+          "size": 31162764,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }
@@ -402,6 +450,18 @@
         },
         {
           "hash": "blake3",
+          "digest": "1c9a0b7b2b4e57c58b621e5f71e2cbb18fe80f6a4009ce088cc84b4525d9854b",
+          "size": 41325128,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
           "digest": "5da85da685396de204826bc44a0c5c0f814fe50d6cf81728ad12c100bf365afa",
           "size": 31796492,
           "format": "tar.xz",
@@ -409,6 +469,18 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "706a5bc47c6172f20a948497084c50c1a58657c135dfc3d2a3c04edf223e9996",
+          "size": 31162764,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }
@@ -546,6 +618,30 @@
           "providers": [
             {
               "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "1c9a0b7b2b4e57c58b621e5f71e2cbb18fe80f6a4009ce088cc84b4525d9854b",
+          "size": 41325128,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-x86_64-unknown-linux-musl/rust-std-x86_64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-x86_64-unknown-linux-musl.tar.xz"
+            }
+          ]
+        },
+        {
+          "hash": "blake3",
+          "digest": "706a5bc47c6172f20a948497084c50c1a58657c135dfc3d2a3c04edf223e9996",
+          "size": 31162764,
+          "format": "tar.xz",
+          "strip": "rust-std-1.99.1-aarch64-unknown-linux-musl/rust-std-aarch64-unknown-linux-musl",
+          "providers": [
+            {
+              "url": "https://static.rust-lang.org/dist/2026-10-15/rust-std-1.99.1-aarch64-unknown-linux-musl.tar.xz"
             }
           ]
         }
