@@ -1,0 +1,59 @@
+{
+  "name": "gh",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "gh_{{TAG}}_macOS_amd64/bin/gh",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_macOS_amd64.zip"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "gh_{{TAG}}_macOS_arm64/bin/gh",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_macOS_arm64.zip"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "gh_{{TAG}}_linux_amd64/bin/gh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_linux_amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "gh_{{TAG}}_linux_arm64/bin/gh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "bin/gh.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_windows_amd64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "bin/gh.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_windows_arm64.zip"
+        }
+      ]
+    }
+  }
+}
