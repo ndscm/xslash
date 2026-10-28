@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "gh",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "6d77c8061fb45dc2f3562542d2d8934eef6e2f4b58cb3a91c36f0406b75499c1",
+      "size": 15702601,
+      "format": "zip",
+      "path": "gh_2.103.3_macOS_amd64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_macOS_amd64.zip"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "5268724952e35144b9ddcb47464064e9a0f5db1754778ed3597df41e390a7b28",
+      "size": 14106091,
+      "format": "zip",
+      "path": "gh_2.103.3_macOS_arm64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_macOS_arm64.zip"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "09a8c86c1b3ba32c83c86bf84e58fe3dfeab6aa8fcca5d0489acf638db8ea192",
+      "size": 15031972,
+      "format": "tar.gz",
+      "path": "gh_2.103.3_linux_amd64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "13b616cc44d55a0d8d7f5f5d24f7907ce1873bd9e1c562dfbfd631b974588ed8",
+      "size": 13661485,
+      "format": "tar.gz",
+      "path": "gh_2.103.3_linux_arm64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "9910de48dc6c4162d19ef63ba5548efea3d84af34fb13cefa84f54ebcf438bf3",
+      "size": 15197187,
+      "format": "zip",
+      "path": "bin/gh.exe",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_windows_amd64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "424d5af88c2ed4009f7bb1760059ed6c92434a500ed0cbf2c959eda59792d9d9",
+      "size": 13637549,
+      "format": "zip",
+      "path": "bin/gh.exe",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_windows_arm64.zip"
+        }
+      ]
+    }
+  }
+}
