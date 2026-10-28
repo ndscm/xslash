@@ -58,13 +58,13 @@ create_sha256() {
 # Pin the macOS deployment target so the darwin binaries claim a stable minimum.
 export MACOSX_DEPLOYMENT_TARGET="11.0"
 
-# The .2.17 suffix on the linux targets pins glibc so the binaries run on older
-# distros instead of requiring the build host's glibc.
+# The linux targets statically link musl so the binaries carry no libc
+# dependency and run on any distro.
 platforms=(
   "darwin amd64 x86_64-apple-darwin"
   "darwin arm64 aarch64-apple-darwin"
-  "linux amd64 x86_64-unknown-linux-gnu.2.17"
-  "linux arm64 aarch64-unknown-linux-gnu.2.17"
+  "linux amd64 x86_64-unknown-linux-musl"
+  "linux arm64 aarch64-unknown-linux-musl"
 )
 
 mkdir -p "./.cache/release"
