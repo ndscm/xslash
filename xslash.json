@@ -11,6 +11,8 @@
   "javac": "prebuilt/java/bin/javac.xslash",
   "jq": "prebuilt/jq/bin/jq.xslash",
   "jshell": "prebuilt/java/bin/jshell.xslash",
+  "nd": "prebuilt/ndscm/bin/ndscm.xslash",
+  "ndscm": "prebuilt/ndscm/bin/ndscm.xslash",
   "node": "prebuilt/node/bin/node.xslash",
   "npm": "prebuilt/node/bin/npm.xslash",
   "npx": "prebuilt/node/bin/npx.xslash",
