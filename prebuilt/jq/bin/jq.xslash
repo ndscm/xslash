@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "jq",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "a56d7b16137e77d6a72f457c9bf39ea35046d5a4fbb8bf023b0780e232dea8ba",
+      "size": 871768,
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-macos-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "651534e32cf0d20894158c10fe984c89160650ca8e81ca9a545b501db5acac9a",
+      "size": 841504,
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-macos-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "4311c64431be63fb82189e7e0950b060b39046e865ebb796ec3fa974309c4986",
+      "size": 2267912,
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "428869e0c7c8b86cc2422a2b1e034cb026776795fb5df707bca3f889c6256626",
+      "size": 1797688,
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "c00901508f1012ae2a2cd25690cda992630a44505bfab6337612f5bbd7dc3ca2",
+      "size": 1035264,
+      "path": "jq.exe",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-windows-amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "7685327103de8e3a059b515ad83b54d2415156f8cce468cc6054b193d4f6f5ad",
+      "size": 973312,
+      "path": "jq.exe",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-windows-arm64.exe"
+        }
+      ]
+    }
+  }
+}
