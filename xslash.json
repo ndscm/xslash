@@ -9,6 +9,7 @@
   "jar": "prebuilt/java/bin/jar.xslash",
   "java": "prebuilt/java/bin/java.xslash",
   "javac": "prebuilt/java/bin/javac.xslash",
+  "jq": "prebuilt/jq/bin/jq.xslash",
   "jshell": "prebuilt/java/bin/jshell.xslash",
   "node": "prebuilt/node/bin/node.xslash",
   "npm": "prebuilt/node/bin/npm.xslash",
