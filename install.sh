@@ -48,15 +48,11 @@ fi
 
 if [[ "${tag}" == "latest" ]]; then
   download_url="https://github.com/ndscm/xslash/releases/latest/download"
-  api_url="https://api.github.com/repos/ndscm/xslash/releases/latest"
 else
   download_url="https://github.com/ndscm/xslash/releases/download/${tag}"
-  api_url="https://api.github.com/repos/ndscm/xslash/releases/tags/${tag}"
 fi
 
-expected_sha256="$(request "${api_url}" |
-  jq -r --arg n "xslash-${host_kernel}-${host_arch}" '.assets[] | select(.name == $n) | .digest' |
-  sed -n 's/^sha256://p')"
+expected_sha256="$(request "${download_url}/xslash-${host_kernel}-${host_arch}.sha256" | awk '{print $1}')"
 
 if [[ ! "${expected_sha256}" =~ ^[a-f0-9]{64}$ ]]; then
   printf "error: could not find a sha256 digest\n" >&2
