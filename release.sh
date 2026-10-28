@@ -39,6 +39,22 @@ if ! grep -qF "version = \"${version}\"" Cargo.toml; then
   exit 1
 fi
 
+create_sha256() {
+  local path="$1"
+  local dir
+  local file
+  dir="$(dirname "${path}")"
+  file="$(basename "${path}")"
+  if command -v sha256sum >/dev/null 2>&1; then
+    (cd "${dir}" && sha256sum "${file}" >"${file}.sha256")
+  elif command -v shasum >/dev/null 2>&1; then
+    (cd "${dir}" && shasum -a 256 "${file}" >"${file}.sha256")
+  else
+    printf "error: neither sha256sum nor shasum found\n" >&2
+    exit 1
+  fi
+}
+
 # Pin the macOS deployment target so the darwin binaries claim a stable minimum.
 export MACOSX_DEPLOYMENT_TARGET="11.0"
 
@@ -64,11 +80,13 @@ for platform in "${platforms[@]}"; do
   cargo zigbuild --release --target "${zig_target}" --bin xslash-helper
 
   cp -f "./target/${rust_target}/release/xslash-helper" "./.cache/release/xslash-helper-${kernel}-${arch}"
+  create_sha256 "./.cache/release/xslash-helper-${kernel}-${arch}"
 
   XSLASH_HELPER_BIN="./.cache/release/xslash-helper-${kernel}-${arch}" \
     cargo zigbuild --release --target "${zig_target}" --bin xslash
 
   cp -f "./target/${rust_target}/release/xslash" "./.cache/release/xslash-${kernel}-${arch}"
+  create_sha256 "./.cache/release/xslash-${kernel}-${arch}"
 done
 
 cargo publish --allow-dirty
