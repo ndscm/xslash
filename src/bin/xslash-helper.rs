@@ -13,6 +13,7 @@ use ::anyhow::bail;
 use ::clap::Args;
 use ::clap::Parser;
 use ::clap::Subcommand;
+use ::std::ffi::OsStr;
 use ::std::path::Path;
 use ::std::process::ExitCode;
 use ::std::time::Duration;
@@ -24,6 +25,31 @@ use ::xslash::XslashEntry;
 fn read_entry(path: &str) -> Result<XslashEntry> {
     let contents = ::std::fs::read_to_string(path).with_context(|| format!("reading {path}"))?;
     XslashEntry::parse(&contents)
+}
+
+/// Create a symlink at `link` pointing at `target`, replacing whatever is
+/// already at `link`.
+#[cfg(unix)]
+fn symlink(target: &OsStr, link: &Path) -> Result<()> {
+    // Overwrite unconditionally: symlink() fails if the path exists, so unlink
+    // first. remove_file drops a symlink without touching its target and also
+    // removes a regular (executable) file; a missing path is not an error.
+    if let Err(err) = ::std::fs::remove_file(link)
+        && err.kind() != ::std::io::ErrorKind::NotFound
+    {
+        return Err(err).with_context(|| format!("removing {}", link.display()));
+    }
+    ::std::os::unix::fs::symlink(target, link)
+        .with_context(|| format!("linking {} -> {}", link.display(), target.to_string_lossy()))
+}
+
+#[cfg(not(unix))]
+fn symlink(target: &OsStr, link: &Path) -> Result<()> {
+    bail!(
+        "cannot link {} -> {}: symlinks are only supported on unix",
+        link.display(),
+        target.to_string_lossy()
+    )
 }
 
 // ---------------------------------------------------------------------------
@@ -49,6 +75,10 @@ struct CreateArgs {
     /// Path to write the generated entry to.
     #[arg(long = "out", required = true)]
     out: String,
+
+    /// Create a symbolic link beside --out that points at it.
+    #[arg(long = "symlink", value_name = "NAME")]
+    symlink: Vec<String>,
 }
 
 #[derive(Args)]
@@ -128,19 +158,46 @@ fn create(args: CreateArgs) -> Result<()> {
 
     let entry = ::xslash::create(skeleton, replacements, args.is_final)?;
 
-    let mut out: Vec<u8> = Vec::new();
-    out.extend_from_slice(b"#!/usr/bin/env xslash\n");
-    ::serde_json::to_writer_pretty(&mut out, &entry)?;
-    out.push(b'\n');
+    let mut buf: Vec<u8> = Vec::new();
+    buf.extend_from_slice(b"#!/usr/bin/env xslash\n");
+    ::serde_json::to_writer_pretty(&mut buf, &entry)?;
+    buf.push(b'\n');
 
-    let path = Path::new(&args.out);
-    if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
+    let out_path = Path::new(&args.out);
+    if let Some(parent) = out_path.parent().filter(|p| !p.as_os_str().is_empty()) {
         ::std::fs::create_dir_all(parent)
             .with_context(|| format!("creating {}", parent.display()))?;
     }
-    ::std::fs::write(path, &out).with_context(|| format!("writing {}", path.display()))?;
-    Chmod::chmod(path, Chmod::add_executable)?;
-    eprintln!("xslash-helper: created {}", path.display());
+    ::std::fs::write(out_path, &buf).with_context(|| format!("writing {}", out_path.display()))?;
+    Chmod::chmod(out_path, Chmod::add_executable)?;
+    eprintln!("xslash-helper: created {}", out_path.display());
+
+    // Create each requested side-by-side symlink: `ln -s -f <basename(out)> NAME`
+    // run from --out's directory, so the link points at the entry by a relative
+    // name and resolves wherever the directory is moved.
+    let out_dir = out_path.parent().filter(|p| !p.as_os_str().is_empty());
+    let out_name = out_path
+        .file_name()
+        .with_context(|| format!("--out has no file name: {}", out_path.display()))?;
+    for link_name in &args.symlink {
+        if Path::new(link_name).file_name() != Some(OsStr::new(link_name)) {
+            bail!("--symlink NAME must be a bare file name, not a path: {link_name}");
+        }
+        let link_path = match out_dir {
+            Some(dir) => dir.join(link_name),
+            None => Path::new(link_name).to_path_buf(),
+        };
+        if link_path == out_path {
+            bail!(
+                "--symlink {link_name} collides with --out {}",
+                out_path.display()
+            );
+        }
+
+        symlink(out_name, &link_path)?;
+
+        eprintln!("xslash-helper: created {}", link_path.display());
+    }
 
     Ok(())
 }

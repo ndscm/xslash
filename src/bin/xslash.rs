@@ -37,7 +37,7 @@ Usage:
   xslash --version                  Print the build version
 
 Helper commands (after `--`):
-  create   --skeleton <entry> [--replace {{TAG}}=x.y.z]... --final true|false --out <path>
+  create   --skeleton <entry> [--replace {{TAG}}=x.y.z]... --final true|false --out <path> [--symlink <name>]...
   download [--all] <entry>
   extract  [--clean] <entry>
   clean    [--downloaded|--extracted] <entry>|<duration>
