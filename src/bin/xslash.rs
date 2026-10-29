@@ -402,9 +402,11 @@ fn run() -> Result<()> {
                         .context("parsing the embedded xslash-helper entry")?;
                     return ::xslash::execv_final(&entry, OsStr::new("xslash-helper"), forward);
                 }
-                use ::std::os::unix::process::CommandExt;
-                let err = Command::new("xslash-helper").args(forward).exec();
-                Err(err).context("running xslash-helper")
+                let status = Command::new("xslash-helper")
+                    .args(forward)
+                    .status()
+                    .context("running xslash-helper")?;
+                ::std::process::exit(status.code().unwrap_or(1));
             }
             _ => execv_entry(first, &rest[1..]),
         },
