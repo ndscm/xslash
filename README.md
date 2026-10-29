@@ -131,7 +131,7 @@ if there's no matching block.
 Since the common invocation is `xslash <entry>`, every subcommand goes after
 `--` so it's never mistaken for an entry-file path.
 
-### `xslash <executable-entry.xslash>`
+### `xslash <entry.xslash>`
 
 Run the prebuilt executable defined in the xslash entry file.
 
@@ -170,31 +170,31 @@ Create or update an xslash entry from a skeleton file.
 - `--replace {{TAG}}=x.x.x` - repeatable; replaces every literal occurrence of
   the marker (here `{{TAG}}`) in the skeleton file. The marker is matched
   verbatim - any string works; `{{...}}` is just the recommended convention.
-- `--final true|false` - required; sets the `final` flag in the generated entry
-  file.
+- `--final` - sets the `final` flag in the generated entry; absent means not
+  final.
 - `--out executable.xslash` - required; the path to write the entry to.
 - `--symlink name` - repeatable; create a symbolic link beside `--out`.
 
-### `xslash -- download [--all] <executable-entry.xslash>`
+### `xslash -- download [--all] <entry.xslash>`
 
 Download the archive without extracting it.
 
 - `--all` - download every platform.
 
-### `xslash -- extract [--clean] <executable-entry.xslash>`
+### `xslash -- extract [--clean] <entry.xslash>`
 
 Download and extract artifacts.
 
 - `--clean` - remove the downloaded artifact afterward.
 
-### `xslash -- clean [--downloaded|--extracted] <executable-entry.xslash>|<time>`
+### `xslash -- clean [--downloaded|--extracted] <entry.xslash>|<duration>`
 
 Remove extracted files to reclaim disk space.
 
 - `--downloaded` - remove downloaded artifacts.
 - `--extracted` - remove extracted files.
 - With neither flag, both downloaded and extracted are removed.
-- `<time>` - a duration like `2d`, `3m`, `4y` (days, months, years); removes
+- `<duration>` - a duration like `2d`, `3m`, `4y` (days, months, years); removes
   entries whose last touch (access) time is older than the duration.
 
 ## Environment
@@ -219,6 +219,7 @@ Remove extracted files to reclaim disk space.
 ```
 CACHE_HOME/
   download/
+    probe.json               # cached provider URL -> hash/digest/size
     <hash>/                  # the hash algorithm used (default blake3)
       <digest>               # the downloaded file whose content matches <digest>
       <digest>.json          # metadata for the downloaded file
@@ -228,12 +229,9 @@ CACHE_HOME/
   rw/                        # extracted read-write entries (use sparingly; defeats sharing)
     <digest>/                # the extracted directory
     <digest>.json            # metadata for the extracted directory
-  hook/                      # per-directory shim dirs injected into PATH by the shell hook
+  resolve/                   # per-directory shim dirs injected into PATH
     <digest>/                # keyed by the hash of the project directory that holds its xslash.json
       <name>                 # a shim named after the entry's "name" so the shell finds it
-    <digest>.json            # {"/abs/path/to/xslash.json": "<blake3 of its contents>", ...}
-                             # records the configs the shim dir was built from; the hook
-                             # regenerates only when these no longer match
 ```
 
 For `ro/`, `<digest>` is the hash of the serialized extraction metadata (the
