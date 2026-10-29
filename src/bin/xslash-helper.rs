@@ -68,8 +68,8 @@ struct CreateArgs {
     #[arg(long = "replace", value_name = "{{TAG}}=VALUE")]
     replace: Vec<String>,
 
-    /// Set the `final` flag in the generated entry.
-    #[arg(long = "final", action = ::clap::ArgAction::Set, value_name = "true|false")]
+    /// Set the `final` flag in the generated entry (absent means not final).
+    #[arg(long = "final")]
     is_final: bool,
 
     /// Path to write the generated entry to.
