@@ -173,6 +173,7 @@ Create or update an xslash entry from a skeleton file.
 - `--final true|false` - required; sets the `final` flag in the generated entry
   file.
 - `--out executable.xslash` - required; the path to write the entry to.
+- `--symlink name` - repeatable; create a symbolic link beside `--out`.
 
 ### `xslash -- download [--all] <executable-entry.xslash>`
 
