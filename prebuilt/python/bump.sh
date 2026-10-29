@@ -26,7 +26,7 @@ xslash -- create \
   --skeleton "./python3.xslash.json" \
   --replace "{{TAG}}=${tag}" \
   --replace "{{VERSION}}=${version}" \
-  --final true \
+  --final=true \
   --out "./bin/python3.xslash"
 
 ln -s -f python3.xslash ./bin/python

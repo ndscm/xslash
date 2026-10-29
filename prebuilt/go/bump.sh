@@ -12,8 +12,8 @@ fi
 
 replacements=(--replace "{{TAG}}=${tag}")
 
-xslash -- create --skeleton "./go.xslash.json" "${replacements[@]}" --final true --out "./bin/go.xslash"
-xslash -- create --skeleton "./gofmt.xslash.json" "${replacements[@]}" --final true --out "./bin/gofmt.xslash"
+xslash -- create --skeleton "./go.xslash.json" "${replacements[@]}" --final=true --out "./bin/go.xslash"
+xslash -- create --skeleton "./gofmt.xslash.json" "${replacements[@]}" --final=true --out "./bin/gofmt.xslash"
 
 ln -s -f go.xslash ./bin/go
 ln -s -f gofmt.xslash ./bin/gofmt

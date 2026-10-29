@@ -10,7 +10,7 @@ if [[ "${1:-}" == "latest" ]]; then
   printf "%s\n" "${tag}" >./TAG
 fi
 
-xslash -- create --skeleton "./ndscm.xslash.json" --replace "{{TAG}}=${tag}" --final true --out "./bin/ndscm.xslash"
+xslash -- create --skeleton "./ndscm.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/ndscm.xslash"
 
 ln -s -f ndscm.xslash ./bin/nd
 ln -s -f ndscm.xslash ./bin/ndscm
