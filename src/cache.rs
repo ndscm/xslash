@@ -6,7 +6,7 @@
 //!   download/<hash>/<digest>          downloaded artifacts (+ <digest>.json)
 //!   ro/<digest>/                         extracted shared entries (+ <digest>.json)
 //!   rw/<digest>/                         extracted mutable entries (+ <digest>.json)
-//!   hook/<digest>/<name>              per-directory PATH shims
+//!   resolve/<digest>/<name>           per-directory PATH shims
 //! ```
 //!
 //! Time-based cleanup (`clean <duration>`) treats each entry's access time as
