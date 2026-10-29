@@ -29,9 +29,10 @@ const HELP: &str = "\
 xslash - simplified distribution of prebuilt executables
 
 Usage:
-  xslash <entry> [args...]          Run the executable defined in the entry
-  xslash -- <command> [options]     Run a helper command
-  xslash --hook                     Print shell code to install the directory hook
+  xslash <entry> [args...]          Run the prebuilt executable the entry defines
+  xslash -- <command> [options]     Run a helper command (see below)
+  xslash --export [--silent]        Generate PATH-sync code for shell to `eval`
+  xslash --hook [--silent]          Generate code to hook `--export` for interactive shells
   xslash --help                     Print this help
   xslash --version                  Print the build version
 
@@ -115,61 +116,11 @@ fn execv_entry(entry_path: &OsStr, forward: &[OsString]) -> Result<()> {
 }
 
 // ---------------------------------------------------------------------------
-// hook
+// export
 // ---------------------------------------------------------------------------
 
-struct HookArgs {
-    /// Internal: reconcile the shim dir and print shell code (a PATH update and
-    /// the carried-over state) for the shell to `eval`. Invoked by the shell
-    /// hook on every prompt.
-    shell: bool,
-
-    /// Suppress the hook/inject/evict status messages on stderr. Without
-    /// --shell, the installed hook snippet runs `--shell --silent`.
-    silent: bool,
-}
-
-impl HookArgs {
-    /// Parse the tokens after `--hook`: only the optional `--shell` and
-    /// `--silent` flags, in any order.
-    fn parse(args: &[OsString]) -> Result<HookArgs> {
-        let mut parsed = HookArgs {
-            shell: false,
-            silent: false,
-        };
-        for arg in args {
-            match arg.to_str() {
-                Some("--shell") => parsed.shell = true,
-                Some("--silent") => parsed.silent = true,
-                _ => bail!(
-                    "xslash --hook: unexpected argument {:?}",
-                    arg.to_string_lossy()
-                ),
-            }
-        }
-        Ok(parsed)
-    }
-}
-
-const HOOK_SNIPPET: &str = r#"_xslash_hook() {
-  local es=$?
-  eval "$(xslash --hook --shell)"
-  return $es
-}
-if [ -n "${ZSH_VERSION:-}" ]; then
-  typeset -ag precmd_functions
-  precmd_functions+=(_xslash_hook)
-  _xslash_hook
-elif [ -n "${BASH_VERSION:-}" ]; then
-  case "${PROMPT_COMMAND:-}" in
-    *_xslash_hook*) ;;
-    *) PROMPT_COMMAND="_xslash_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}" ;;
-  esac
-fi
-"#;
-
-/// Rebuild a `PATH` string for the `eval`'d hook: drop every occurrence of the
-/// previously hooked dir, then prepend the new one (unless already present).
+/// Rebuild a `PATH` string for the shell to `eval`: drop every occurrence of the
+/// previously injected dir, then prepend the new one (unless already present).
 fn inject_path(path: &str, old: Option<&str>, new: Option<&str>) -> String {
     let mut entries: Vec<&str> = path.split(':').filter(|e| Some(*e) != old).collect();
     if let Some(new) = new
@@ -196,19 +147,18 @@ fn sh_quote(s: &str) -> String {
     out
 }
 
-/// Reconcile the shim dir for `configs` (root -> cwd), keyed on `project_dir`,
-/// returning the shim dir's path and a digest of the resolved name -> entry-path
-/// map.
+/// Reconcile the shim dir `resolve_dir` against `configs` (root -> cwd),
+/// returning a digest of the resolved name -> entry-path map.
 ///
 /// Does nothing when `old_digest` (carried from the previous prompt via
-/// `XSLASH_HOOK_DIGEST`) still matches and the dir exists; otherwise rebuilds the
-/// shims, announcing changes on stderr unless `silent`.
-fn reconcile_hook_dir(
-    project_dir: &Path,
+/// `XSLASH_RESOLVE_DIGEST`) still matches and the dir exists; otherwise rebuilds
+/// the shims, announcing changes on stderr unless `silent`.
+fn reconcile_resolve_dir(
+    resolve_dir: &Path,
     configs: &[PathBuf],
     old_digest: Option<&str>,
     silent: bool,
-) -> Result<(String, String)> {
+) -> Result<String> {
     // Build the name -> resolved entry path map the shims bake into `actual`.
     // `configs` runs root -> cwd, so inserting in order lets a nearer config
     // override an outer one (nearest wins, as at runtime).
@@ -228,18 +178,14 @@ fn reconcile_hook_dir(
     // blake3 over the resolved map as compact, sorted-key JSON. Any added,
     // removed, or repointed name moves it; an edit that leaves the map identical
     // does not.
-    let serialized = ::serde_json::to_string(&resolved).context("serializing hook map")?;
+    let serialized = ::serde_json::to_string(&resolved).context("serializing resolved map")?;
     let digest = Hash::Blake3.hash_bytes(serialized.as_bytes())?;
-
-    // Key the hook dir on the project dir - the project root we're inside.
-    let cache = Cache::from_env(false)?;
-    let hook_dir = cache.hook_dir(project_dir)?;
 
     // Reconcile only when the digest moved, or the dir is missing (e.g. the cache
     // was cleared): otherwise the shims already match and this is a no-op.
-    if !(hook_dir.is_dir() && old_digest == Some(digest.as_str())) {
-        ::std::fs::create_dir_all(&hook_dir)
-            .with_context(|| format!("creating {}", hook_dir.display()))?;
+    if !(resolve_dir.is_dir() && old_digest == Some(digest.as_str())) {
+        ::std::fs::create_dir_all(&resolve_dir)
+            .with_context(|| format!("creating {}", resolve_dir.display()))?;
 
         // Announce (direnv-style, on stderr) which configs are now in effect.
         if !silent {
@@ -253,8 +199,8 @@ fn reconcile_hook_dir(
         // longer mapped, leaving unchanged shims (and anyone mid-exec) untouched.
         let names: BTreeSet<String> = resolved.keys().cloned().collect();
         let mut existing: BTreeSet<String> = BTreeSet::new();
-        for entry in ::std::fs::read_dir(&hook_dir)
-            .with_context(|| format!("reading {}", hook_dir.display()))?
+        for entry in ::std::fs::read_dir(&resolve_dir)
+            .with_context(|| format!("reading {}", resolve_dir.display()))?
         {
             if let Some(name) = entry?.file_name().to_str() {
                 existing.insert(name.to_string());
@@ -262,7 +208,7 @@ fn reconcile_hook_dir(
         }
 
         for (name, actual) in &resolved {
-            let shim_path = hook_dir.join(name);
+            let shim_path = resolve_dir.join(name);
             let shim_entry = ::serde_json::to_string_pretty(&XslashEntry {
                 name: name.clone(),
                 is_final: None,
@@ -284,7 +230,7 @@ fn reconcile_hook_dir(
         }
 
         for name in existing.difference(&names) {
-            let shim = hook_dir.join(name);
+            let shim = resolve_dir.join(name);
             if !silent {
                 eprintln!("xslash: evict {name}");
             }
@@ -293,92 +239,109 @@ fn reconcile_hook_dir(
         }
     }
 
-    Ok((hook_dir.display().to_string(), digest))
+    Ok(digest)
 }
 
-fn hook(args: HookArgs) -> Result<()> {
-    if !args.shell {
-        // Propagate --silent into the command the installed hook runs each
-        // prompt, so a silent install stays silent.
-        if args.silent {
-            print!(
-                "{}",
-                HOOK_SNIPPET.replace("--hook --shell", "--hook --shell --silent")
-            );
-        } else {
-            print!("{HOOK_SNIPPET}");
-        }
-        return Ok(());
-    }
-
+/// Reconcile the current project's shim dir and print shell code (a PATH update
+/// and the carried-over state) for the shell to `eval`, syncing PATH with the
+/// current project. Run by hand or from a non-interactive script.
+fn export(silent: bool) -> Result<()> {
     let cwd = ::std::env::current_dir().context("getting current directory")?;
     let (project_dir, configs) = find_ancient_configs(&cwd);
 
-    // The digest reconciled on the previous prompt rides along in the
-    // environment (direnv style), so the "did the resolved map change?" decision
-    // lives in the binary, not the shell.
-    let old_hook_digest = ::std::env::var("XSLASH_HOOK_DIGEST")
-        .ok()
-        .filter(|s| !s.is_empty());
-
-    // Reconcile the current project's shim dir, or no dir when not in a project.
-    let (new_hook_dir, new_hook_digest) = match &project_dir {
-        Some(project_dir) => {
-            let (dir, digest) = reconcile_hook_dir(
-                project_dir,
-                &configs,
-                old_hook_digest.as_deref(),
-                args.silent,
-            )?;
-            (Some(dir), Some(digest))
-        }
-        None => (None, None),
+    let resolve_dir = match &project_dir {
+        Some(project_dir) => Some(Cache::from_env(false)?.resolve_dir(project_dir)?),
+        None => None,
     };
+    let new_resolve_dir = resolve_dir.as_ref().map(|dir| dir.display().to_string());
 
-    // The previously hooked dir rides along in the environment (direnv style),
-    // so the "did the hooked path change?" decision lives in the binary, not the
-    // shell. Touch PATH only on an actual change - a cd into or out of a project,
-    // or a config change that moved the dir - then print shell code to `eval`.
-    let old_hook_dir = ::std::env::var("XSLASH_HOOK_PATH")
+    let old_resolve_dir = ::std::env::var("XSLASH_RESOLVE_DIR")
         .ok()
         .filter(|s| !s.is_empty());
-    if new_hook_dir != old_hook_dir {
-        let path = ::std::env::var("PATH").context("reading PATH")?;
-        let updated = inject_path(&path, old_hook_dir.as_deref(), new_hook_dir.as_deref());
-        println!("export PATH={}", sh_quote(&updated));
-        // Always announce leaving the previous hooked dir, before entering the
-        // new one.
-        if let Some(_) = &old_hook_dir
-            && !args.silent
-        {
+
+    if !silent && new_resolve_dir != old_resolve_dir {
+        if old_resolve_dir.is_some() {
             eprintln!("xslash: exit");
         }
+        if let Some(project_dir) = &project_dir {
+            eprintln!("xslash: enter {}", project_dir.display());
+        }
+    }
 
-        match &new_hook_dir {
-            Some(new_hook_dir) => {
-                println!("export XSLASH_HOOK_PATH={}", sh_quote(new_hook_dir));
-                if !args.silent
-                    && let Some(project_dir) = &project_dir
-                {
-                    eprintln!("xslash: enter {}", project_dir.display());
-                }
+    let old_resolve_digest = ::std::env::var("XSLASH_RESOLVE_DIGEST")
+        .ok()
+        .filter(|s| !s.is_empty());
+    let new_resolve_digest = match &resolve_dir {
+        Some(resolve_dir) => Some(reconcile_resolve_dir(
+            resolve_dir,
+            &configs,
+            old_resolve_digest.as_deref(),
+            silent,
+        )?),
+        None => None,
+    };
+
+    // Touch PATH only on an actual change, then print shell code to `eval`.
+    if new_resolve_dir != old_resolve_dir {
+        let path = ::std::env::var("PATH").context("reading PATH")?;
+        let updated_path = inject_path(
+            &path,
+            old_resolve_dir.as_deref(),
+            new_resolve_dir.as_deref(),
+        );
+        println!("export PATH={}", sh_quote(&updated_path));
+        match &new_resolve_dir {
+            Some(new_resolve_dir) => {
+                println!("export XSLASH_RESOLVE_DIR={}", sh_quote(new_resolve_dir));
             }
             None => {
-                println!("unset XSLASH_HOOK_PATH");
+                println!("unset XSLASH_RESOLVE_DIR");
             }
         }
     }
 
-    // Carry the digest forward for the next prompt. A config change that repoints
-    // an entry without moving the dir leaves PATH untouched but still moves this
-    // digest.
-    if new_hook_digest != old_hook_digest {
-        match &new_hook_digest {
-            Some(digest) => println!("export XSLASH_HOOK_DIGEST={}", sh_quote(digest)),
-            None => println!("unset XSLASH_HOOK_DIGEST"),
+    if new_resolve_digest != old_resolve_digest {
+        match &new_resolve_digest {
+            Some(digest) => println!("export XSLASH_RESOLVE_DIGEST={}", sh_quote(digest)),
+            None => println!("unset XSLASH_RESOLVE_DIGEST"),
         }
     }
 
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// hook
+// ---------------------------------------------------------------------------
+
+const HOOK_SNIPPET: &str = r#"
+_xslash_hook() {
+  local es=$?
+  eval "$(xslash --export)"
+  return $es
+}
+if [ -n "${ZSH_VERSION:-}" ]; then
+  typeset -ag precmd_functions
+  precmd_functions+=(_xslash_hook)
+  _xslash_hook
+elif [ -n "${BASH_VERSION:-}" ]; then
+  case "${PROMPT_COMMAND:-}" in
+    *_xslash_hook*) ;;
+    *) PROMPT_COMMAND="_xslash_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}" ;;
+  esac
+fi
+"#;
+
+/// Print the shell snippet that wires `xslash --export` into the shell's
+/// per-prompt hook. Sourced once (e.g. from `.zshrc`/`.bashrc`).
+fn hook(silent: bool) -> Result<()> {
+    // Propagate --silent into the command the installed hook runs each prompt,
+    // so a silent install stays silent.
+    if silent {
+        print!("{}", HOOK_SNIPPET.replace("--export", "--export --silent"));
+    } else {
+        print!("{HOOK_SNIPPET}");
+    }
     Ok(())
 }
 
@@ -391,6 +354,19 @@ fn hook(args: HookArgs) -> Result<()> {
 /// on non-release builds, which fall back to `$PATH`.
 const HELPER_ENTRY: &str = include_str!(concat!(env!("OUT_DIR"), "/xslash-helper.xslash"));
 
+/// Parse the tokens after `--hook` or `--export`: only the optional `--silent`
+/// flag.
+fn parse_silent(args: &[OsString]) -> Result<bool> {
+    let mut silent = false;
+    for arg in args {
+        match arg.to_str() {
+            Some("--silent") => silent = true,
+            _ => bail!("unexpected argument {:?}", arg.to_string_lossy()),
+        }
+    }
+    Ok(silent)
+}
+
 fn run() -> Result<()> {
     let args: Vec<OsString> = ::std::env::args_os().collect();
     let rest = &args[1..];
@@ -401,6 +377,14 @@ fn run() -> Result<()> {
             Ok(())
         }
         Some(first) => match first.to_str() {
+            Some("--export") => {
+                let silent = parse_silent(&rest[1..])?;
+                export(silent)
+            }
+            Some("--hook") => {
+                let silent = parse_silent(&rest[1..])?;
+                hook(silent)
+            }
             Some("--help") => {
                 print!("{HELP}");
                 Ok(())
@@ -409,7 +393,6 @@ fn run() -> Result<()> {
                 println!("xslash {}", env!("CARGO_PKG_VERSION"));
                 Ok(())
             }
-            Some("--hook") => hook(HookArgs::parse(&rest[1..])?),
             Some("--") => {
                 // Use the baked-in entry if present (release builds), else fall
                 // back to running xslash-helper from `$PATH`.

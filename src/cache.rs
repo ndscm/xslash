@@ -508,8 +508,8 @@ impl Cache {
     }
 
     /// The per-directory shim dir for a project rooted at `project_dir`.
-    pub fn hook_dir(&self, config_dir: &Path) -> Result<PathBuf> {
-        let digest = Hash::Blake3.hash_bytes(config_dir.as_os_str().as_encoded_bytes())?;
-        Ok(self.home.join("hook").join(digest))
+    pub fn resolve_dir(&self, project_dir: &Path) -> Result<PathBuf> {
+        let digest = Hash::Blake3.hash_bytes(project_dir.as_os_str().as_encoded_bytes())?;
+        Ok(self.home.join("resolve").join(digest))
     }
 }
