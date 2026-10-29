@@ -139,10 +139,15 @@ Run the prebuilt executable defined in the xslash entry file.
 
 Run a helper command (see below).
 
+### `xslash --export`
+
+Generate shell code to sync PATH with the current project. Run it with
+`eval "$(xslash --export)"`.
+
 ### `xslash --hook`
 
-Install hook to shell to inject PATH for directly changes. Used by putting
-`eval "$(xslash --hook)"` in `~/.bashrc` or `~/.zshrc`.
+Generate shell code to hook `--export` for interactive shells. Install it by
+putting `eval "$(xslash --hook)"` in `~/.bashrc` or `~/.zshrc`.
 
 ### `xslash --help`
 
