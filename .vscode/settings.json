@@ -18,7 +18,7 @@
     "**/target/**": true
   },
   "prettier.prettierPath": "./node_modules/prettier",
-  "rust-analyzer.server.path": "./prebuilt/rust/bin/rust-analyzer",
+  "rust-analyzer.server.path": "${workspaceFolder}/prebuilt/rust/bin/rust-analyzer",
 
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
