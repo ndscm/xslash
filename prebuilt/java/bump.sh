@@ -26,10 +26,10 @@ fi
 
 replacements=(--replace "{{TAG}}=${tag}" --replace "{{VERSION}}=${version}")
 
-xslash -- create --skeleton "./jar.xslash.json" "${replacements[@]}" --final true --out "./bin/jar.xslash"
-xslash -- create --skeleton "./java.xslash.json" "${replacements[@]}" --final true --out "./bin/java.xslash"
-xslash -- create --skeleton "./javac.xslash.json" "${replacements[@]}" --final true --out "./bin/javac.xslash"
-xslash -- create --skeleton "./jshell.xslash.json" "${replacements[@]}" --final true --out "./bin/jshell.xslash"
+xslash -- create --skeleton "./jar.xslash.json" "${replacements[@]}" --final=true --out "./bin/jar.xslash"
+xslash -- create --skeleton "./java.xslash.json" "${replacements[@]}" --final=true --out "./bin/java.xslash"
+xslash -- create --skeleton "./javac.xslash.json" "${replacements[@]}" --final=true --out "./bin/javac.xslash"
+xslash -- create --skeleton "./jshell.xslash.json" "${replacements[@]}" --final=true --out "./bin/jshell.xslash"
 
 ln -s -f jar.xslash ./bin/jar
 ln -s -f java.xslash ./bin/java

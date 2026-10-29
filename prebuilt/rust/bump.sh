@@ -15,14 +15,14 @@ fi
 
 replacements=(--replace "{{TAG}}=${tag}" --replace "{{VERSION}}=${version}")
 
-xslash -- create --skeleton "./cargo-clippy.xslash.json" "${replacements[@]}" --final true --out "./bin/cargo-clippy.xslash"
-xslash -- create --skeleton "./cargo-fmt.xslash.json" "${replacements[@]}" --final true --out "./bin/cargo-fmt.xslash"
-xslash -- create --skeleton "./cargo.xslash.json" "${replacements[@]}" --final true --out "./bin/cargo.xslash"
-xslash -- create --skeleton "./rust-analyzer.xslash.json" "${replacements[@]}" --final true --out "./bin/rust-analyzer.xslash"
-xslash -- create --skeleton "./rust-gdb.xslash.json" "${replacements[@]}" --final true --out "./bin/rust-gdb.xslash"
-xslash -- create --skeleton "./rustc.xslash.json" "${replacements[@]}" --final true --out "./bin/rustc.xslash"
-xslash -- create --skeleton "./rustdoc.xslash.json" "${replacements[@]}" --final true --out "./bin/rustdoc.xslash"
-xslash -- create --skeleton "./rustfmt.xslash.json" "${replacements[@]}" --final true --out "./bin/rustfmt.xslash"
+xslash -- create --skeleton "./cargo-clippy.xslash.json" "${replacements[@]}" --final=true --out "./bin/cargo-clippy.xslash"
+xslash -- create --skeleton "./cargo-fmt.xslash.json" "${replacements[@]}" --final=true --out "./bin/cargo-fmt.xslash"
+xslash -- create --skeleton "./cargo.xslash.json" "${replacements[@]}" --final=true --out "./bin/cargo.xslash"
+xslash -- create --skeleton "./rust-analyzer.xslash.json" "${replacements[@]}" --final=true --out "./bin/rust-analyzer.xslash"
+xslash -- create --skeleton "./rust-gdb.xslash.json" "${replacements[@]}" --final=true --out "./bin/rust-gdb.xslash"
+xslash -- create --skeleton "./rustc.xslash.json" "${replacements[@]}" --final=true --out "./bin/rustc.xslash"
+xslash -- create --skeleton "./rustdoc.xslash.json" "${replacements[@]}" --final=true --out "./bin/rustdoc.xslash"
+xslash -- create --skeleton "./rustfmt.xslash.json" "${replacements[@]}" --final=true --out "./bin/rustfmt.xslash"
 
 ln -s -f "cargo-clippy.xslash" "./bin/cargo-clippy"
 ln -s -f "cargo-fmt.xslash" "./bin/cargo-fmt"
