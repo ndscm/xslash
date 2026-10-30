@@ -226,7 +226,7 @@ pub struct Core {
     pub http: Http,
 
     /// Local cache homes where artifacts are downloaded and extracted.
-    pub cache: Cache,
+    cache: Option<Cache>,
 }
 
 impl Core {
@@ -234,8 +234,15 @@ impl Core {
     pub fn from_env(silent: bool) -> Result<Core> {
         Ok(Core {
             http: Http::from_env(silent),
-            cache: Cache::from_env(silent)?,
+            cache: Cache::from_env(silent).ok(),
         })
+    }
+
+    /// The resolved cache, or an error when no cache home could be inferred.
+    pub fn cache(&self) -> Result<&Cache> {
+        self.cache
+            .as_ref()
+            .context("no xslash cache home available; set XSLASH_CACHE_HOME")
     }
 
     /// Download `src` into `tmp`, trying the cache server first and then each
@@ -302,14 +309,14 @@ impl Core {
 
         let mut paths = Vec::new();
         for src in platform.components()? {
-            if let Some(path) = self.cache.downloaded_path(&src) {
+            if let Some(path) = self.cache()?.downloaded_path(&src) {
                 paths.push(path);
                 continue;
             }
 
             // Serialize downloads of this artifact.
             let (downloaded, lock) = self
-                .cache
+                .cache()?
                 .acquire_download_lock(src.hash, src.digest.to_string())?;
 
             // Another holder may have published it while we waited; trust it
@@ -370,7 +377,9 @@ impl Core {
         let digest = platform.extract_digest()?;
 
         // Serialize extractions of this entry; the lock is removed when dropped.
-        let (extracted, lock) = self.cache.acquire_extract_lock(platform.is_rw(), &digest)?;
+        let (extracted, lock) = self
+            .cache()?
+            .acquire_extract_lock(platform.is_rw(), &digest)?;
 
         // Another holder may have extracted it while we waited for the lock.
         if extracted {
@@ -427,7 +436,7 @@ impl Core {
         // Every entry extracts into a directory - a raw binary and a single-file
         // compressor are placed at `path` within it just as an archive is
         // unpacked into it - so there is a single extraction path.
-        if let Some(exe) = self.cache.extracted_dir(platform)? {
+        if let Some(exe) = self.cache()?.extracted_dir(platform)? {
             return Ok(exe);
         }
 
@@ -450,7 +459,7 @@ impl Core {
         // under a throwaway lock (empty digest), then settle it under the real
         // digest lock.
         let (_, staging) = self
-            .cache
+            .cache()?
             .acquire_download_lock(Hash::Unknown, String::new())?;
         let mut last_err = None;
         for provider in providers {
@@ -468,7 +477,7 @@ impl Core {
 
             // Reuse an earlier probe of this URL rather than downloading it
             // again just to recompute the digest.
-            if let Some(probe) = self.cache.get_probe(provider_url) {
+            if let Some(probe) = self.cache()?.get_probe(provider_url) {
                 staging.release(false, true)?;
                 return Ok((probe.size, probe.digest));
             }
@@ -484,7 +493,7 @@ impl Core {
             let digest = Hash::Blake3.hash_file(&staging.tmp)?;
 
             let (downloaded, lock) = self
-                .cache
+                .cache()?
                 .acquire_download_lock(Hash::Blake3, digest.clone())?;
             if downloaded {
                 // Another holder already cached it; our staging copy is dropped
@@ -508,7 +517,7 @@ impl Core {
             }
 
             // Record this URL's result so a later probe can skip the download.
-            self.cache
+            self.cache()?
                 .update_probe(
                     provider_url,
                     &Probe {
@@ -530,37 +539,56 @@ impl Core {
     /// in each artifact's `.json` cache sidecar. Used by `create` to fill in
     /// skeleton entries whose digests aren't yet known.
     ///
+    /// An artifact that already carries all three of `size`, `hash`, and
+    /// `digest` in the skeleton is trusted as-is: it is neither downloaded nor
+    /// recorded in the cache (there is no fetched copy to annotate).
+    ///
     /// A platform is handled in two passes because a compose platform's
     /// component digests aren't all known until every component is probed: first
-    /// probe each artifact and fill in its digest, then - once the whole
-    /// platform is resolved - write the complete entry into every artifact's
-    /// sidecar.
+    /// probe each not-yet-resolved artifact and fill in its digest, then - once
+    /// the whole platform is resolved - write the complete entry into the
+    /// sidecar of each artifact fetched this run.
     pub fn probe(&self, entry: &mut XslashEntry) -> Result<()> {
         let name = entry.name.clone();
         for (platform_key, platform) in entry.platforms.iter_mut() {
-            // First pass: probe each of the platform's artifacts, filling in its
-            // size/hash/digest. A compose platform has several, a single-artifact
-            // platform has one, and a name-only platform has none to probe.
+            // First pass: probe each of the platform's artifacts whose
+            // size/hash/digest isn't already provided, filling it in. A compose
+            // platform has several, a single-artifact platform has one, and a
+            // name-only platform has none to probe. Digests fetched this run are
+            // collected so only they are recorded in the second pass.
+            let mut probed: Vec<String> = Vec::new();
             if let Some(compose) = platform.compose.as_mut() {
                 for c in compose.iter_mut() {
-                    let (size, digest) = self.probe_component(&c.providers)?;
-                    c.size = Some(size);
-                    c.hash = Some(Hash::Blake3);
-                    c.digest = Some(digest);
+                    if c.size.is_none() || c.hash.is_none() || c.digest.is_none() {
+                        let (size, digest) = self.probe_component(&c.providers)?;
+                        c.size = Some(size);
+                        c.hash = Some(Hash::Blake3);
+                        c.digest = Some(digest.clone());
+                        probed.push(digest);
+                    }
                 }
             } else if let Some(providers) = platform.providers.as_deref() {
-                let (size, digest) = self.probe_component(providers)?;
-                platform.hash = Some(Hash::Blake3);
-                platform.digest = Some(digest);
-                platform.size = Some(size);
+                if platform.size.is_none() || platform.hash.is_none() || platform.digest.is_none() {
+                    let (size, digest) = self.probe_component(providers)?;
+                    platform.hash = Some(Hash::Blake3);
+                    platform.digest = Some(digest.clone());
+                    platform.size = Some(size);
+                    probed.push(digest);
+                }
             } else {
                 continue;
             }
 
+            // Every artifact was trusted, so nothing was fetched and there is no
+            // freshly-cached copy to annotate.
+            if probed.is_empty() {
+                continue;
+            }
+
             // Second pass: the platform is fully resolved now, so record the
-            // complete entry in each artifact's `.json` sidecar - held under the
-            // artifact's download lock so concurrent writers of the same digest
-            // don't clobber each other.
+            // complete entry in the `.json` sidecar of each artifact fetched this
+            // run - held under the artifact's download lock so concurrent writers
+            // of the same digest don't clobber each other.
             let entry = XslashEntry {
                 name: name.clone(),
                 is_final: None,
@@ -568,8 +596,11 @@ impl Core {
                 platforms: BTreeMap::from([(platform_key.clone(), platform.clone())]),
             };
             for src in platform.components()? {
+                if !probed.iter().any(|digest| digest == src.digest) {
+                    continue;
+                }
                 let (_, lock) = self
-                    .cache
+                    .cache()?
                     .acquire_download_lock(src.hash, src.digest.to_string())?;
                 merge_metadata(&lock.metadata, &entry).ok();
                 lock.release(false, true)?;

@@ -148,8 +148,9 @@ pub fn read_actual(path: &Path) -> Result<XslashEntry> {
 /// pair replaces every literal occurrence of `MARKER` in paths, provider URLs,
 /// and compose `strip` subpaths; `{{NAME}}` is the recommended marker style but
 /// any string works),
-/// download every provider to compute its size and blake3 digest, and set the
-/// `final` flag.
+/// download each provider to compute its size and blake3 digest, and set the
+/// `final` flag. An artifact whose `size`, `hash`, and `digest` are all already
+/// present in the skeleton is trusted as-is and not downloaded.
 pub fn create(
     skeleton: XslashEntry,
     replacements: Vec<(String, String)>,
@@ -222,7 +223,7 @@ pub fn extract(entry: &XslashEntry, clean: bool) -> Result<PathBuf> {
     if clean {
         let (_, platform) = entry.select_platform(None)?;
         for src in platform.components()? {
-            let path = core.cache.download_path(src.hash, src.digest);
+            let path = core.cache()?.download_path(src.hash, src.digest);
             ::std::fs::remove_file(&path).ok();
             ::std::fs::remove_file(path.with_extension("json")).ok();
         }
