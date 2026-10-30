@@ -10,8 +10,5 @@ if [[ "${1:-}" == "latest" ]]; then
   printf "%s\n" "${tag}" >./TAG
 fi
 
-xslash -- create --skeleton "./uv.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/uv.xslash"
-xslash -- create --skeleton "./uvx.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/uvx.xslash"
-
-ln -s -f uv.xslash ./bin/uv
-ln -s -f uvx.xslash ./bin/uvx
+xslash -- create --skeleton "./uv.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/uv.xslash" --symlink uv
+xslash -- create --skeleton "./uvx.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/uvx.xslash" --symlink uvx

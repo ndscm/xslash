@@ -22,12 +22,6 @@ if [[ "${1:-}" == "latest" ]]; then
   printf "%s\n" "${version}" >./VERSION
 fi
 
-xslash -- create \
-  --skeleton "./python3.xslash.json" \
-  --replace "{{TAG}}=${tag}" \
-  --replace "{{VERSION}}=${version}" \
-  --final=true \
-  --out "./bin/python3.xslash"
+replacements=(--replace "{{TAG}}=${tag}" --replace "{{VERSION}}=${version}")
 
-ln -s -f python3.xslash ./bin/python
-ln -s -f python3.xslash ./bin/python3
+xslash -- create --skeleton "./python3.xslash.json" "${replacements[@]}" --final --out "./bin/python3.xslash" --symlink python --symlink python3

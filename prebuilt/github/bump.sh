@@ -10,6 +10,4 @@ if [[ "${1:-}" == "latest" ]]; then
   printf "%s\n" "${tag}" >./TAG
 fi
 
-xslash -- create --skeleton "./gh.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/gh.xslash"
-
-ln -s -f gh.xslash ./bin/gh
+xslash -- create --skeleton "./gh.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/gh.xslash" --symlink gh
