@@ -26,12 +26,7 @@ fi
 
 replacements=(--replace "{{TAG}}=${tag}" --replace "{{VERSION}}=${version}")
 
-xslash -- create --skeleton "./jar.xslash.json" "${replacements[@]}" --final=true --out "./bin/jar.xslash"
-xslash -- create --skeleton "./java.xslash.json" "${replacements[@]}" --final=true --out "./bin/java.xslash"
-xslash -- create --skeleton "./javac.xslash.json" "${replacements[@]}" --final=true --out "./bin/javac.xslash"
-xslash -- create --skeleton "./jshell.xslash.json" "${replacements[@]}" --final=true --out "./bin/jshell.xslash"
-
-ln -s -f jar.xslash ./bin/jar
-ln -s -f java.xslash ./bin/java
-ln -s -f javac.xslash ./bin/javac
-ln -s -f jshell.xslash ./bin/jshell
+xslash -- create --skeleton "./jar.xslash.json" "${replacements[@]}" --final --out "./bin/jar.xslash" --symlink jar
+xslash -- create --skeleton "./java.xslash.json" "${replacements[@]}" --final --out "./bin/java.xslash" --symlink java
+xslash -- create --skeleton "./javac.xslash.json" "${replacements[@]}" --final --out "./bin/javac.xslash" --symlink javac
+xslash -- create --skeleton "./jshell.xslash.json" "${replacements[@]}" --final --out "./bin/jshell.xslash" --symlink jshell

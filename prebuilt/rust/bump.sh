@@ -15,20 +15,11 @@ fi
 
 replacements=(--replace "{{TAG}}=${tag}" --replace "{{VERSION}}=${version}")
 
-xslash -- create --skeleton "./cargo-clippy.xslash.json" "${replacements[@]}" --final=true --out "./bin/cargo-clippy.xslash"
-xslash -- create --skeleton "./cargo-fmt.xslash.json" "${replacements[@]}" --final=true --out "./bin/cargo-fmt.xslash"
-xslash -- create --skeleton "./cargo.xslash.json" "${replacements[@]}" --final=true --out "./bin/cargo.xslash"
-xslash -- create --skeleton "./rust-analyzer.xslash.json" "${replacements[@]}" --final=true --out "./bin/rust-analyzer.xslash"
-xslash -- create --skeleton "./rust-gdb.xslash.json" "${replacements[@]}" --final=true --out "./bin/rust-gdb.xslash"
-xslash -- create --skeleton "./rustc.xslash.json" "${replacements[@]}" --final=true --out "./bin/rustc.xslash"
-xslash -- create --skeleton "./rustdoc.xslash.json" "${replacements[@]}" --final=true --out "./bin/rustdoc.xslash"
-xslash -- create --skeleton "./rustfmt.xslash.json" "${replacements[@]}" --final=true --out "./bin/rustfmt.xslash"
-
-ln -s -f "cargo-clippy.xslash" "./bin/cargo-clippy"
-ln -s -f "cargo-fmt.xslash" "./bin/cargo-fmt"
-ln -s -f "cargo.xslash" "./bin/cargo"
-ln -s -f "rust-analyzer.xslash" "./bin/rust-analyzer"
-ln -s -f "rust-gdb.xslash" "./bin/rust-gdb"
-ln -s -f "rustc.xslash" "./bin/rustc"
-ln -s -f "rustdoc.xslash" "./bin/rustdoc"
-ln -s -f "rustfmt.xslash" "./bin/rustfmt"
+xslash -- create --skeleton "./cargo-clippy.xslash.json" "${replacements[@]}" --final --out "./bin/cargo-clippy.xslash" --symlink cargo-clippy
+xslash -- create --skeleton "./cargo-fmt.xslash.json" "${replacements[@]}" --final --out "./bin/cargo-fmt.xslash" --symlink cargo-fmt
+xslash -- create --skeleton "./cargo.xslash.json" "${replacements[@]}" --final --out "./bin/cargo.xslash" --symlink cargo
+xslash -- create --skeleton "./rust-analyzer.xslash.json" "${replacements[@]}" --final --out "./bin/rust-analyzer.xslash" --symlink rust-analyzer
+xslash -- create --skeleton "./rust-gdb.xslash.json" "${replacements[@]}" --final --out "./bin/rust-gdb.xslash" --symlink rust-gdb
+xslash -- create --skeleton "./rustc.xslash.json" "${replacements[@]}" --final --out "./bin/rustc.xslash" --symlink rustc
+xslash -- create --skeleton "./rustdoc.xslash.json" "${replacements[@]}" --final --out "./bin/rustdoc.xslash" --symlink rustdoc
+xslash -- create --skeleton "./rustfmt.xslash.json" "${replacements[@]}" --final --out "./bin/rustfmt.xslash" --symlink rustfmt

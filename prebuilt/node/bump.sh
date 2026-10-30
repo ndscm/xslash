@@ -14,10 +14,6 @@ elif [[ "${1:-}" == "lts" ]]; then
   printf "%s\n" "${tag}" >./TAG
 fi
 
-xslash -- create --skeleton "./node.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/node.xslash"
-xslash -- create --skeleton "./npm.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/npm.xslash"
-xslash -- create --skeleton "./npx.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/npx.xslash"
-
-ln -s -f node.xslash ./bin/node
-ln -s -f npm.xslash ./bin/npm
-ln -s -f npx.xslash ./bin/npx
+xslash -- create --skeleton "./node.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/node.xslash" --symlink node
+xslash -- create --skeleton "./npm.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/npm.xslash" --symlink npm
+xslash -- create --skeleton "./npx.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/npx.xslash" --symlink npx

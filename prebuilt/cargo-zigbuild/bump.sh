@@ -10,6 +10,4 @@ if [[ "${1:-}" == "latest" ]]; then
   printf "%s\n" "${tag}" >./TAG
 fi
 
-xslash -- create --skeleton "./cargo-zigbuild.xslash.json" --replace "{{TAG}}=${tag}" --final=true --out "./bin/cargo-zigbuild.xslash"
-
-ln -s -f cargo-zigbuild.xslash ./bin/cargo-zigbuild
+xslash -- create --skeleton "./cargo-zigbuild.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/cargo-zigbuild.xslash" --symlink cargo-zigbuild

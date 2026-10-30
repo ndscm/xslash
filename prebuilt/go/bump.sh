@@ -10,10 +10,5 @@ if [[ "${1:-}" == "latest" ]]; then
   printf "%s\n" "${tag}" >./TAG
 fi
 
-replacements=(--replace "{{TAG}}=${tag}")
-
-xslash -- create --skeleton "./go.xslash.json" "${replacements[@]}" --final=true --out "./bin/go.xslash"
-xslash -- create --skeleton "./gofmt.xslash.json" "${replacements[@]}" --final=true --out "./bin/gofmt.xslash"
-
-ln -s -f go.xslash ./bin/go
-ln -s -f gofmt.xslash ./bin/gofmt
+xslash -- create --skeleton "./go.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/go.xslash" --symlink go
+xslash -- create --skeleton "./gofmt.xslash.json" --replace "{{TAG}}=${tag}" --final --out "./bin/gofmt.xslash" --symlink gofmt
