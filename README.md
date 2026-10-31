@@ -310,16 +310,11 @@ xslash deliberately drops the following dotslash features:
 
 ## Using xslash with direnv
 
-direnv snapshots your PATH when its hook first runs and reuses that snapshot for
-later PATH injection. If the xslash hook is registered after the direnv hook,
-direnv's snapshot won't include xslash's PATH entries, and they'll get flushed.
-To use xslash alongside direnv, register the xslash hook before direnv in your
-`~/.bashrc` or `~/.zshrc`:
-
-```bash
-eval "$(xslash --hook)" # before direnv hook
-eval "$(direnv hook bash)"
-```
+Both direnv and xslash inject into `PATH` from their shell hooks, so when they
+run in different orders their entries can end up in different positions. If a
+tool is injected by both, which one wins depends on that ordering and isn't
+guaranteed to be stable. To avoid surprises, make sure the executables direnv
+injects don't overlap with the ones xslash injects.
 
 ## Limitations
 
