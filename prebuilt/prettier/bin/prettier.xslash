@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "prettier",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "43c5ee46998256a71c56e12bae7c837a39a1a80cb2692e1180ae35ca62da590d",
+      "size": 2801570,
+      "format": "tar.gz",
+      "path": "package/bin/prettier.cjs",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.9.10.tgz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "43c5ee46998256a71c56e12bae7c837a39a1a80cb2692e1180ae35ca62da590d",
+      "size": 2801570,
+      "format": "tar.gz",
+      "path": "package/bin/prettier.cjs",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.9.10.tgz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "43c5ee46998256a71c56e12bae7c837a39a1a80cb2692e1180ae35ca62da590d",
+      "size": 2801570,
+      "format": "tar.gz",
+      "path": "package/bin/prettier.cjs",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.9.10.tgz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "43c5ee46998256a71c56e12bae7c837a39a1a80cb2692e1180ae35ca62da590d",
+      "size": 2801570,
+      "format": "tar.gz",
+      "path": "package/bin/prettier.cjs",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.9.10.tgz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "43c5ee46998256a71c56e12bae7c837a39a1a80cb2692e1180ae35ca62da590d",
+      "size": 2801570,
+      "format": "tar.gz",
+      "path": "package/bin/prettier.cjs",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.9.10.tgz"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "43c5ee46998256a71c56e12bae7c837a39a1a80cb2692e1180ae35ca62da590d",
+      "size": 2801570,
+      "format": "tar.gz",
+      "path": "package/bin/prettier.cjs",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.9.10.tgz"
+        }
+      ]
+    }
+  }
+}
