@@ -17,6 +17,7 @@
   "npm": "prebuilt/node/bin/npm.xslash",
   "npx": "prebuilt/node/bin/npx.xslash",
   "pnpm": "prebuilt/pnpm/bin/pnpm.xslash",
+  "prettier": "prebuilt/prettier/bin/prettier.xslash",
   "python": "prebuilt/python/bin/python3.xslash",
   "python3": "prebuilt/python/bin/python3.xslash",
   "rust-analyzer": "prebuilt/rust/bin/rust-analyzer.xslash",
