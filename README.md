@@ -308,6 +308,19 @@ xslash deliberately drops the following dotslash features:
 - Non-http providers
 - GitHub-specific actions
 
+## Using xslash with direnv
+
+direnv snapshots your PATH when its hook first runs and reuses that snapshot for
+later PATH injection. If the xslash hook is registered after the direnv hook,
+direnv's snapshot won't include xslash's PATH entries, and they'll get flushed.
+To use xslash alongside direnv, register the xslash hook before direnv in your
+`~/.bashrc` or `~/.zshrc`:
+
+```bash
+eval "$(xslash --hook)" # before direnv hook
+eval "$(direnv hook bash)"
+```
+
 ## Limitations
 
 See: <https://dotslash-cli.com/docs/limitations/>
