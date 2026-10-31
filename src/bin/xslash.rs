@@ -281,16 +281,19 @@ fn export(silent: bool) -> Result<()> {
         None => None,
     };
 
-    // Touch PATH only on an actual change, then print shell code to `eval`.
+    let path = ::std::env::var("PATH").context("reading PATH")?;
+    let updated_path = inject_path(
+        &path,
+        old_resolve_dir.as_deref(),
+        new_resolve_dir.as_deref(),
+    );
+    let path_changed = updated_path != path;
+    if path_changed {
+        println!("export PATH={}", sh_quote(&updated_path));
+    }
+
     let resolve_dir_changed = new_resolve_dir != old_resolve_dir;
     if resolve_dir_changed {
-        let path = ::std::env::var("PATH").context("reading PATH")?;
-        let updated_path = inject_path(
-            &path,
-            old_resolve_dir.as_deref(),
-            new_resolve_dir.as_deref(),
-        );
-        println!("export PATH={}", sh_quote(&updated_path));
         match &new_resolve_dir {
             Some(new_resolve_dir) => {
                 println!("export XSLASH_RESOLVE_DIR={}", sh_quote(new_resolve_dir));
@@ -309,9 +312,10 @@ fn export(silent: bool) -> Result<()> {
         }
     }
 
-    // Clear the shell's command hash so a changed shim isn't shadowed by the
-    // stale cached path. `hash -r` works in both zsh and bash.
-    if resolve_dir_changed || resolve_digest_changed {
+    // Clear the shell's command hash whenever PATH or the shims moved, so a
+    // changed or recovered shim isn't shadowed by a stale cached lookup.
+    // `hash -r` works in both zsh and bash.
+    if path_changed || resolve_dir_changed || resolve_digest_changed {
         println!("hash -r");
     }
 
