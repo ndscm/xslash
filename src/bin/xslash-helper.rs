@@ -170,7 +170,7 @@ fn create(args: CreateArgs) -> Result<()> {
     }
     ::std::fs::write(out_path, &buf).with_context(|| format!("writing {}", out_path.display()))?;
     Chmod::chmod(out_path, Chmod::add_executable)?;
-    eprintln!("xslash-helper: created {}", out_path.display());
+    println!("{}", out_path.display());
 
     // Create each requested side-by-side symlink: `ln -s -f <basename(out)> NAME`
     // run from --out's directory, so the link points at the entry by a relative
@@ -196,7 +196,7 @@ fn create(args: CreateArgs) -> Result<()> {
 
         symlink(out_name, &link_path)?;
 
-        eprintln!("xslash-helper: created {}", link_path.display());
+        println!("[symlink] {}", link_path.display());
     }
 
     Ok(())
@@ -213,12 +213,12 @@ fn download(args: DownloadArgs) -> Result<()> {
         // --all is a CLI convenience that downloads each platform block in turn.
         for key in entry.platforms.keys() {
             for path in ::xslash::download(&entry, Some(key))? {
-                eprintln!("xslash-helper: downloaded [{key}] {}", path.display());
+                println!("[{key}] {}", path.display());
             }
         }
     } else {
         for path in ::xslash::download(&entry, None)? {
-            eprintln!("xslash-helper: downloaded {}", path.display());
+            println!("{}", path.display());
         }
     }
     Ok(())
@@ -231,7 +231,7 @@ fn download(args: DownloadArgs) -> Result<()> {
 fn extract(args: ExtractArgs) -> Result<()> {
     let entry = read_entry(&args.entry)?;
     let exe = ::xslash::extract(&entry, args.clean)?;
-    eprintln!("xslash-helper: extracted {}", exe.display());
+    println!("{}", exe.display());
     Ok(())
 }
 
