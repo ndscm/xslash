@@ -1,0 +1,59 @@
+{
+  "name": "prettier",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "package/bin/prettier.cjs",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "package/bin/prettier.cjs",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "package/bin/prettier.cjs",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "package/bin/prettier.cjs",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "package/bin/prettier.cjs",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "package/bin/prettier.cjs",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://registry.npmjs.org/prettier/-/prettier-{{TAG}}.tgz"
+        }
+      ]
+    }
+  }
+}
