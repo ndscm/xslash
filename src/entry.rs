@@ -94,6 +94,12 @@ pub struct Provider {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Format {
+    /// A macOS disk image (`.dmg`).
+    Dmg,
+
+    /// An uncompressed tarball (`.tar`).
+    Tar,
+
     /// A gzip-compressed tarball (`.tar.gz`).
     #[serde(rename = "tar.gz")]
     TarGz,
@@ -106,8 +112,8 @@ pub enum Format {
     #[serde(rename = "tar.zst")]
     TarZst,
 
-    /// An uncompressed tarball (`.tar`).
-    Tar,
+    /// A zip archive (`.zip`).
+    Zip,
 
     /// A single gzip-compressed file (`.gz`), not an archive.
     Gz,
@@ -117,9 +123,6 @@ pub enum Format {
 
     /// A single zstd-compressed file (`.zst`), not an archive.
     Zst,
-
-    /// A zip archive (`.zip`).
-    Zip,
 }
 
 /// One element of a `compose` list: an archive extracted into a subdirectory of
@@ -207,8 +210,8 @@ pub struct Platform {
     /// from `<extraction dir>/<path>`. Required (enforced when the components
     /// are resolved).
     ///
-    /// - Archive formats (`tar`, `tar.gz`, `tar.xz`, `tar.zst`, `zip`): the
-    ///   path to the executable inside the extracted archive.
+    /// - Archive formats (`dmg`, `tar`, `tar.gz`, `tar.xz`, `tar.zst`, `zip`):
+    ///   the path to the executable inside the extracted archive.
     /// - Single-file formats (`gz`, `xz`, `zst`, or no format): the path at
     ///   which the decompressed file - or, with no format, the raw binary - is
     ///   placed in the extraction directory; that file is itself the executable.
@@ -281,14 +284,15 @@ impl Platform {
             hasher.update(b"\0");
             let format = match src.format {
                 None => "",
+                Some(Format::Dmg) => "dmg",
+                Some(Format::Gz) => "gz",
+                Some(Format::Tar) => "tar",
                 Some(Format::TarGz) => "tar.gz",
                 Some(Format::TarXz) => "tar.xz",
                 Some(Format::TarZst) => "tar.zst",
-                Some(Format::Tar) => "tar",
-                Some(Format::Gz) => "gz",
                 Some(Format::Xz) => "xz",
-                Some(Format::Zst) => "zst",
                 Some(Format::Zip) => "zip",
+                Some(Format::Zst) => "zst",
             };
             hasher.update(format.as_bytes());
             hasher.update(b"\0");
@@ -328,7 +332,12 @@ impl Platform {
                     // An archive is unpacked at `path`, or the composed root
                     // when omitted.
                     Some(
-                        Format::Tar | Format::TarGz | Format::TarXz | Format::TarZst | Format::Zip,
+                        Format::Dmg
+                        | Format::Tar
+                        | Format::TarGz
+                        | Format::TarXz
+                        | Format::TarZst
+                        | Format::Zip,
                     ) => c.path.as_deref().unwrap_or(""),
                 };
                 out.push(Component {
@@ -363,7 +372,12 @@ impl Platform {
                 // executable then found at `path` inside it.
                 None | Some(Format::Gz | Format::Xz | Format::Zst) => exepath,
                 Some(
-                    Format::Tar | Format::TarGz | Format::TarXz | Format::TarZst | Format::Zip,
+                    Format::Dmg
+                    | Format::Tar
+                    | Format::TarGz
+                    | Format::TarXz
+                    | Format::TarZst
+                    | Format::Zip,
                 ) => "",
             };
             Ok(vec![Component {
