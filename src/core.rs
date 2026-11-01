@@ -174,6 +174,68 @@ fn unpack_zip(file: &Path, strip: &str, target: &Path) -> Result<()> {
         .with_context(|| format!("sanitizing modes under {}", target.display()))
 }
 
+fn unpack_dmg(file: &Path, strip: &str, target: &Path) -> Result<()> {
+    ::std::fs::create_dir_all(target).with_context(|| format!("creating {}", target.display()))?;
+
+    // Mount at a private, non-browsable mountpoint beside the target. Extraction
+    // of a given digest is serialized by its lock, so this path can't collide.
+    let mount = target.with_extension("dmg-mnt");
+    let _ = ::std::fs::remove_dir_all(&mount);
+    ::std::fs::create_dir_all(&mount).with_context(|| format!("creating {}", mount.display()))?;
+
+    let status = ::std::process::Command::new("hdiutil")
+        .args([
+            "attach",
+            "-nobrowse",
+            "-readonly",
+            "-noverify",
+            "-noautoopen",
+            "-mountpoint",
+        ])
+        .arg(&mount)
+        .arg(file)
+        .status()
+        .context("running hdiutil attach (dmg extraction requires macOS)")?;
+    if !status.success() {
+        let _ = ::std::fs::remove_dir_all(&mount);
+        bail!("hdiutil attach failed for {}", file.display());
+    }
+
+    // Copy the payload out, then detach regardless of the copy's outcome so a
+    // failure never leaves the image attached.
+    let source = if strip.is_empty() {
+        mount.clone()
+    } else {
+        mount.join(strip)
+    };
+    let outcome = (|| {
+        let status = ::std::process::Command::new("ditto")
+            .arg(&source)
+            .arg(target)
+            .status()
+            .context("running ditto")?;
+        if !status.success() {
+            bail!(
+                "ditto failed copying {} into {}",
+                source.display(),
+                target.display()
+            );
+        }
+        Ok(())
+    })();
+
+    let _ = ::std::process::Command::new("hdiutil")
+        .args(["detach", "-quiet"])
+        .arg(&mount)
+        .status();
+    let _ = ::std::fs::remove_dir_all(&mount);
+
+    outcome?;
+    // Mask modes a crafted image may carry: setuid/setgid and group/other write.
+    Chmod::chmod_recursive(target, Chmod::sanitize)
+        .with_context(|| format!("sanitizing modes under {}", target.display()))
+}
+
 /// Extract (or copy) one source into `into`. When `strip` is set for an
 /// archive, only the entries under that leading in-archive subpath are
 /// extracted, with the prefix dropped; it is ignored for single-file formats.
@@ -193,6 +255,7 @@ fn extract_component(
 
     match format {
         None => copy_file(file, &target)?,
+        Some(Format::Dmg) => unpack_dmg(file, strip, &target)?,
         Some(Format::Tar) => unpack_tar(File::open(file)?, strip, &target)?,
         Some(Format::TarGz) => unpack_tar(
             ::flate2::read::GzDecoder::new(File::open(file)?),
@@ -205,6 +268,7 @@ fn extract_component(
             strip,
             &target,
         )?,
+        Some(Format::Zip) => unpack_zip(file, strip, &target)?,
         Some(Format::Gz) => {
             decompress_to_file(::flate2::read::GzDecoder::new(File::open(file)?), &target)?
         }
@@ -213,7 +277,6 @@ fn extract_component(
             ::ruzstd::decoding::StreamingDecoder::new(File::open(file)?)?,
             &target,
         )?,
-        Some(Format::Zip) => unpack_zip(file, strip, &target)?,
     }
     Ok(())
 }
