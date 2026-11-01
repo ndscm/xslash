@@ -308,6 +308,11 @@ xslash deliberately drops the following dotslash features:
 - Non-http providers
 - GitHub-specific actions
 
+## Performance
+
+xslash adds ~0.8 ms per call, the same as dotslash. The overhead is almost
+imperceptible to humans. See [benchmark/README.md](benchmark/README.md).
+
 ## Using xslash with direnv
 
 Both direnv and xslash inject into `PATH` from their shell hooks, so when they
@@ -325,7 +330,3 @@ See: <https://dotslash-cli.com/docs/limitations/>
 - Selecting an artifact tag with a script
 - A client SDK for other languages
 - Windows support
-
-## Benchmark
-
-TODO
