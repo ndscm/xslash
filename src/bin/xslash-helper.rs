@@ -68,6 +68,10 @@ struct CreateArgs {
     #[arg(long = "replace", value_name = "{{TAG}}=VALUE")]
     replace: Vec<String>,
 
+    /// Only generate these platform keys. Repeatable.
+    #[arg(long = "platform", value_name = "<kernel>-<arch>")]
+    platform: Vec<String>,
+
     /// Set the `final` flag in the generated entry (absent means not final).
     #[arg(long = "final")]
     is_final: bool,
@@ -83,9 +87,13 @@ struct CreateArgs {
 
 #[derive(Args)]
 struct DownloadArgs {
-    /// Download every platform, not just the host's.
+    /// Download every platform.
     #[arg(long)]
     all: bool,
+
+    /// Download these platform keys. Repeatable.
+    #[arg(long = "platform", value_name = "<kernel>-<arch>")]
+    platform: Vec<String>,
 
     entry: String,
 }
@@ -153,8 +161,22 @@ fn create(args: CreateArgs) -> Result<()> {
 
     let contents = ::std::fs::read_to_string(&args.skeleton)
         .with_context(|| format!("reading {}", args.skeleton))?;
-    let skeleton = XslashEntry::parse(&contents)
+    let mut skeleton = XslashEntry::parse(&contents)
         .with_context(|| format!("parsing skeleton {}", args.skeleton))?;
+
+    if !args.platform.is_empty() {
+        for key in &args.platform {
+            if !skeleton.platforms.contains_key(key) {
+                eprintln!(
+                    "xslash-helper: (warning) --platform {key} not found in skeleton {}",
+                    args.skeleton
+                );
+            }
+        }
+        skeleton
+            .platforms
+            .retain(|key, _| args.platform.contains(key));
+    }
 
     let entry = ::xslash::create(skeleton, replacements, args.is_final)?;
 
@@ -210,8 +232,20 @@ fn download(args: DownloadArgs) -> Result<()> {
     let entry = read_entry(&args.entry)?;
 
     if args.all {
-        // --all is a CLI convenience that downloads each platform block in turn.
         for key in entry.platforms.keys() {
+            for path in ::xslash::download(&entry, Some(key))? {
+                println!("[{key}] {}", path.display());
+            }
+        }
+    } else if !args.platform.is_empty() {
+        for key in &args.platform {
+            if !entry.platforms.contains_key(key) {
+                eprintln!(
+                    "xslash-helper: (warning) --platform {key} not found in {}",
+                    args.entry
+                );
+                continue;
+            }
             for path in ::xslash::download(&entry, Some(key))? {
                 println!("[{key}] {}", path.display());
             }
