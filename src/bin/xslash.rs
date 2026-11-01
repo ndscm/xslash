@@ -33,14 +33,16 @@ Usage:
   xslash -- <command> [options]     Run a helper command (see below)
   xslash --export [--silent]        Generate PATH-sync code for shell to `eval`
   xslash --hook [--silent]          Generate code to hook `--export` for interactive shells
-  xslash --help                     Print this help
-  xslash --version                  Print the build version
+  xslash --help                     Print help
+  xslash --version                  Print version
 
 Helper commands (after `--`):
-  create   --skeleton <entry> [--replace {{TAG}}=x.y.z]... [--final] --out <path> [--symlink <name>]...
-  download [--all] <entry>
-  extract  [--clean] <entry>
-  clean    [--downloaded|--extracted] <entry>|<duration>
+  create     Create or update xslash entries from skeleton files
+  download   Download the archive without extracting it
+  extract    Download and extract artifacts
+  clean      Remove extracted files (or downloads) to reclaim disk space
+  --help     Print help
+  --version  Print version
 ";
 
 /// Collect every `xslash.json` on the path from the filesystem root down to
