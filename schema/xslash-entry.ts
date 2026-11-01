@@ -38,7 +38,7 @@ export type XslashEntry = {
 
           /**
            * Archive/compression format, or omitted for a raw executable. One of
-           * `tar.gz`, `tar.xz`, `tar.zst`, `tar`, `gz`, `xz`, `zst`, `zip`.
+           * `dmg`, `tar`, `tar.gz`, `tar.xz`, `tar.zst`, `zip`, `gz`, `xz`, `zst`.
            */
           format?: string
 
@@ -90,7 +90,7 @@ export type XslashEntry = {
 
             /**
              * Archive/compression format, or omitted for a raw file. One of
-             * `tar.gz`, `tar.xz`, `tar.zst`, `tar`, `gz`, `xz`, `zst`, `zip`.
+             * `dmg`, `tar`, `tar.gz`, `tar.xz`, `tar.zst`, `zip`, `gz`, `xz`, `zst`.
              */
             format?: string
 

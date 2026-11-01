@@ -149,7 +149,7 @@
                     "type": "string"
                   },
                   "format": {
-                    "description": "Archive/compression format, or omitted for a raw executable. One of `tar.gz`, `tar.xz`, `tar.zst`, `tar`, `gz`, `xz`, `zst`, `zip`.",
+                    "description": "Archive/compression format, or omitted for a raw executable. One of `dmg`, `tar`, `tar.gz`, `tar.xz`, `tar.zst`, `zip`, `gz`, `xz`, `zst`.",
                     "type": "string"
                   },
                   "hash": {
@@ -207,7 +207,7 @@
                           "type": "string"
                         },
                         "format": {
-                          "description": "Archive/compression format, or omitted for a raw file. One of `tar.gz`, `tar.xz`, `tar.zst`, `tar`, `gz`, `xz`, `zst`, `zip`.",
+                          "description": "Archive/compression format, or omitted for a raw file. One of `dmg`, `tar`, `tar.gz`, `tar.xz`, `tar.zst`, `zip`, `gz`, `xz`, `zst`.",
                           "type": "string"
                         },
                         "hash": {
