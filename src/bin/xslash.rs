@@ -121,14 +121,28 @@ fn execv_entry(entry_path: &OsStr, forward: &[OsString]) -> Result<()> {
 // export
 // ---------------------------------------------------------------------------
 
-/// Rebuild a `PATH` string for the shell to `eval`: drop every occurrence of the
-/// previously injected dir, then prepend the new one (unless already present).
-fn inject_path(path: &str, old: Option<&str>, new: Option<&str>) -> String {
-    let mut entries: Vec<&str> = path.split(':').filter(|e| Some(*e) != old).collect();
-    if let Some(new) = new
-        && !entries.contains(&new)
+/// Rebuild a `PATH` string for the shell to `eval`: drop every stale shim dir,
+/// then prepend `new_resolve_dir` unless already present.
+fn inject_path(
+    path: &str,
+    resolve_root: &str,
+    old_resolve_dir: Option<&str>,
+    new_resolve_dir: Option<&str>,
+) -> String {
+    let prefix = format!("{resolve_root}/");
+    let mut entries: Vec<&str> = path
+        .split(':')
+        .filter(|entry| {
+            Some(*entry) == new_resolve_dir
+                || (*entry != resolve_root
+                    && !entry.starts_with(&prefix)
+                    && Some(*entry) != old_resolve_dir)
+        })
+        .collect();
+    if let Some(new_resolve_dir) = new_resolve_dir
+        && !entries.contains(&new_resolve_dir)
     {
-        entries.insert(0, new);
+        entries.insert(0, new_resolve_dir);
     }
     entries.join(":")
 }
@@ -244,15 +258,18 @@ fn reconcile_resolve_dir(
     Ok(digest)
 }
 
-/// Reconcile the current project's shim dir and print shell code (a PATH update
-/// and the carried-over state) for the shell to `eval`, syncing PATH with the
-/// current project. Run by hand or from a non-interactive script.
+/// Reconcile the current project's shim dir and print shell code for the shell
+/// to `eval`, syncing PATH with the current project. Run by hand or from a
+/// non-interactive script.
 fn export(silent: bool) -> Result<()> {
     let cwd = ::std::env::current_dir().context("getting current directory")?;
     let (project_dir, configs) = find_ancient_configs(&cwd);
 
+    let cache = Cache::from_env(false)?;
+    let resolve_root = cache.resolve_root().display().to_string();
+
     let resolve_dir = match &project_dir {
-        Some(project_dir) => Some(Cache::from_env(false)?.resolve_dir(project_dir)?),
+        Some(project_dir) => Some(cache.resolve_dir(project_dir)?),
         None => None,
     };
     let new_resolve_dir = resolve_dir.as_ref().map(|dir| dir.display().to_string());
@@ -286,6 +303,7 @@ fn export(silent: bool) -> Result<()> {
     let path = ::std::env::var("PATH").context("reading PATH")?;
     let updated_path = inject_path(
         &path,
+        &resolve_root,
         old_resolve_dir.as_deref(),
         new_resolve_dir.as_deref(),
     );
@@ -294,11 +312,16 @@ fn export(silent: bool) -> Result<()> {
         println!("export PATH={}", sh_quote(&updated_path));
     }
 
-    let resolve_dir_changed = new_resolve_dir != old_resolve_dir;
+    let path_resolve_dir = new_resolve_dir
+        .as_deref()
+        .filter(|new| updated_path.split(':').any(|e| e == *new))
+        .map(str::to_string);
+
+    let resolve_dir_changed = path_resolve_dir != old_resolve_dir;
     if resolve_dir_changed {
-        match &new_resolve_dir {
-            Some(new_resolve_dir) => {
-                println!("export XSLASH_RESOLVE_DIR={}", sh_quote(new_resolve_dir));
+        match &path_resolve_dir {
+            Some(path_resolve_dir) => {
+                println!("export XSLASH_RESOLVE_DIR={}", sh_quote(path_resolve_dir));
             }
             None => {
                 println!("unset XSLASH_RESOLVE_DIR");
@@ -306,9 +329,13 @@ fn export(silent: bool) -> Result<()> {
         }
     }
 
-    let resolve_digest_changed = new_resolve_digest != old_resolve_digest;
+    let path_resolve_digest = match &path_resolve_dir {
+        Some(_) => new_resolve_digest.clone(),
+        None => None,
+    };
+    let resolve_digest_changed = path_resolve_digest != old_resolve_digest;
     if resolve_digest_changed {
-        match &new_resolve_digest {
+        match &path_resolve_digest {
             Some(digest) => println!("export XSLASH_RESOLVE_DIGEST={}", sh_quote(digest)),
             None => println!("unset XSLASH_RESOLVE_DIGEST"),
         }
