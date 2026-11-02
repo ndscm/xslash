@@ -230,8 +230,9 @@ CACHE_HOME/
     <digest>/                # the extracted directory
     <digest>.json            # metadata for the extracted directory
   resolve/                   # per-directory shim dirs injected into PATH
-    <digest>/                # keyed by the hash of the project directory that holds its xslash.json
-      <name>                 # a shim named after the entry's "name" so the shell finds it
+    <slug>/                  # the project directory
+      bin/                   # the shims live in a "bin" subdir
+        <name>               # a shim named after the entry's "name" so the shell finds it
 ```
 
 For `ro/`, `<digest>` is the hash of the serialized extraction metadata (the
