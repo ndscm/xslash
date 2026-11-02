@@ -4,9 +4,9 @@
 //! CACHE_HOME/
 //!   download/probe.json               probed provider URL -> hash/digest/size
 //!   download/<hash>/<digest>          downloaded artifacts (+ <digest>.json)
-//!   ro/<digest>/                         extracted shared entries (+ <digest>.json)
-//!   rw/<digest>/                         extracted mutable entries (+ <digest>.json)
-//!   resolve/<digest>/<name>           per-directory PATH shims
+//!   ro/<digest>/                      extracted shared entries (+ <digest>.json)
+//!   rw/<digest>/                      extracted mutable entries (+ <digest>.json)
+//!   resolve/<slug>/bin/<name>         per-directory PATH shims
 //! ```
 //!
 //! Time-based cleanup (`clean <duration>`) treats each entry's access time as
@@ -514,7 +514,20 @@ impl Cache {
 
     /// The per-directory shim dir for a project rooted at `project_dir`.
     pub fn resolve_dir(&self, project_dir: &Path) -> Result<PathBuf> {
-        let digest = Hash::Blake3.hash_bytes(project_dir.as_os_str().as_encoded_bytes())?;
-        Ok(self.resolve_root().join(digest))
+        const MAX: usize = 80;
+        const DIGEST: usize = 8;
+
+        let abs_path = ::std::path::absolute(project_dir)
+            .with_context(|| format!("resolving absolute path of {}", project_dir.display()))?;
+        let digest = Hash::Blake3.hash_bytes(abs_path.as_os_str().as_encoded_bytes())?;
+        let mut slug: String = abs_path
+            .to_string_lossy()
+            .chars()
+            .map(|c| if c.is_ascii_alphanumeric() { c } else { '-' })
+            .collect();
+        slug.truncate(MAX);
+        slug.push('-');
+        slug.push_str(&digest[..DIGEST]);
+        Ok(self.resolve_root().join(slug).join("bin"))
     }
 }
