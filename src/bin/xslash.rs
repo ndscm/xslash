@@ -31,7 +31,7 @@ xslash - simplified distribution of prebuilt executables
 Usage:
   xslash <entry> [args...]          Run the prebuilt executable the entry defines
   xslash -- <command> [options]     Run a helper command (see below)
-  xslash --export [--silent]        Generate PATH-sync code for shell to `eval`
+  xslash --export [--promote] [--silent] Generate PATH-sync code for shell to `eval`
   xslash --hook [--silent]          Generate code to hook `--export` for interactive shells
   xslash --help                     Print help
   xslash --version                  Print version
@@ -128,12 +128,13 @@ fn inject_path(
     resolve_root: &str,
     old_resolve_dir: Option<&str>,
     new_resolve_dir: Option<&str>,
+    promote: bool,
 ) -> String {
     let prefix = format!("{resolve_root}/");
     let mut entries: Vec<&str> = path
         .split(':')
         .filter(|entry| {
-            Some(*entry) == new_resolve_dir
+            (!promote && Some(*entry) == new_resolve_dir)
                 || (*entry != resolve_root
                     && !entry.starts_with(&prefix)
                     && Some(*entry) != old_resolve_dir)
@@ -261,7 +262,7 @@ fn reconcile_resolve_dir(
 /// Reconcile the current project's shim dir and print shell code for the shell
 /// to `eval`, syncing PATH with the current project. Run by hand or from a
 /// non-interactive script.
-fn export(silent: bool) -> Result<()> {
+fn export(promote: bool, silent: bool) -> Result<()> {
     let cwd = ::std::env::current_dir().context("getting current directory")?;
     let (project_dir, configs) = find_ancient_configs(&cwd);
 
@@ -306,6 +307,7 @@ fn export(silent: bool) -> Result<()> {
         &resolve_root,
         old_resolve_dir.as_deref(),
         new_resolve_dir.as_deref(),
+        promote,
     );
     let path_changed = updated_path != path;
     if path_changed {
@@ -395,9 +397,20 @@ fn hook(silent: bool) -> Result<()> {
 /// on non-release builds, which fall back to `$PATH`.
 const HELPER_ENTRY: &str = include_str!(concat!(env!("OUT_DIR"), "/xslash-helper.xslash"));
 
-/// Parse the tokens after `--hook` or `--export`: only the optional `--silent`
-/// flag.
-fn parse_silent(args: &[OsString]) -> Result<bool> {
+fn parse_export_flags(args: &[OsString]) -> Result<(bool, bool)> {
+    let mut promote = false;
+    let mut silent = false;
+    for arg in args {
+        match arg.to_str() {
+            Some("--promote") => promote = true,
+            Some("--silent") => silent = true,
+            _ => bail!("unexpected argument {:?}", arg.to_string_lossy()),
+        }
+    }
+    Ok((promote, silent))
+}
+
+fn parse_hook_flags(args: &[OsString]) -> Result<bool> {
     let mut silent = false;
     for arg in args {
         match arg.to_str() {
@@ -419,11 +432,11 @@ fn run() -> Result<()> {
         }
         Some(first) => match first.to_str() {
             Some("--export") => {
-                let silent = parse_silent(&rest[1..])?;
-                export(silent)
+                let (promote, silent) = parse_export_flags(&rest[1..])?;
+                export(promote, silent)
             }
             Some("--hook") => {
-                let silent = parse_silent(&rest[1..])?;
+                let silent = parse_hook_flags(&rest[1..])?;
                 hook(silent)
             }
             Some("--help") => {
