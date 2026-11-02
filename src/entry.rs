@@ -5,7 +5,9 @@ use ::anyhow::Context;
 use ::anyhow::Result;
 use ::anyhow::bail;
 use ::serde::Deserialize;
+use ::serde::Deserializer;
 use ::serde::Serialize;
+use ::serde::Serializer;
 use ::std::collections::BTreeMap;
 
 use crate::hash::Hash;
@@ -46,7 +48,7 @@ pub fn alternative_host_platform() -> String {
 }
 
 /// One downloadable+extractable artifact resolved from a [`Platform`].
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct Component<'a> {
     /// Expected size of the downloaded artifact in bytes.
     pub size: u64,
@@ -91,8 +93,7 @@ pub struct Provider {
 
 /// The decompressor to run on a downloaded artifact. Required whenever the
 /// artifact is an archive; omitted for a single raw executable.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Format {
     /// A macOS disk image (`.dmg`).
     Dmg,
@@ -101,15 +102,12 @@ pub enum Format {
     Tar,
 
     /// A gzip-compressed tarball (`.tar.gz`).
-    #[serde(rename = "tar.gz")]
     TarGz,
 
     /// An xz-compressed tarball (`.tar.xz`).
-    #[serde(rename = "tar.xz")]
     TarXz,
 
     /// A zstd-compressed tarball (`.tar.zst`).
-    #[serde(rename = "tar.zst")]
     TarZst,
 
     /// A zip archive (`.zip`).
@@ -123,6 +121,51 @@ pub enum Format {
 
     /// A single zstd-compressed file (`.zst`), not an archive.
     Zst,
+
+    /// An unrecognized format for forward-compatibility.
+    Unknown(String),
+}
+
+impl Format {
+    fn as_str(&self) -> &str {
+        match self {
+            Format::Dmg => "dmg",
+            Format::Tar => "tar",
+            Format::TarGz => "tar.gz",
+            Format::TarXz => "tar.xz",
+            Format::TarZst => "tar.zst",
+            Format::Zip => "zip",
+            Format::Gz => "gz",
+            Format::Xz => "xz",
+            Format::Zst => "zst",
+            Format::Unknown(s) => s,
+        }
+    }
+}
+
+impl Serialize for Format {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> Deserialize<'de> for Format {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Format, D::Error> {
+        let s = String::deserialize(deserializer)?;
+        let format = match s.as_str() {
+            "dmg" => Format::Dmg,
+            "tar" => Format::Tar,
+            "tar.gz" => Format::TarGz,
+            "tar.xz" => Format::TarXz,
+            "tar.zst" => Format::TarZst,
+            "zip" => Format::Zip,
+            "gz" => Format::Gz,
+            "xz" => Format::Xz,
+            "zst" => Format::Zst,
+            _ => Format::Unknown(s),
+        };
+        Ok(format)
+    }
 }
 
 /// One element of a `compose` list: an archive extracted into a subdirectory of
@@ -282,18 +325,7 @@ impl Platform {
             hasher.update(b"\0");
             hasher.update(src.digest.as_bytes());
             hasher.update(b"\0");
-            let format = match src.format {
-                None => "",
-                Some(Format::Dmg) => "dmg",
-                Some(Format::Gz) => "gz",
-                Some(Format::Tar) => "tar",
-                Some(Format::TarGz) => "tar.gz",
-                Some(Format::TarXz) => "tar.xz",
-                Some(Format::TarZst) => "tar.zst",
-                Some(Format::Xz) => "xz",
-                Some(Format::Zip) => "zip",
-                Some(Format::Zst) => "zst",
-            };
+            let format = src.format.as_ref().map_or("", Format::as_str);
             hasher.update(format.as_bytes());
             hasher.update(b"\0");
             hasher.update(src.strip.as_bytes());
@@ -321,7 +353,7 @@ impl Platform {
             }
             let mut out = Vec::with_capacity(compose.len());
             for c in compose {
-                let dest = match c.format {
+                let dest = match &c.format {
                     // A single-file component is itself a file placed at `path`,
                     // which is therefore required.
                     None | Some(Format::Gz | Format::Xz | Format::Zst) => c
@@ -339,6 +371,7 @@ impl Platform {
                         | Format::TarZst
                         | Format::Zip,
                     ) => c.path.as_deref().unwrap_or(""),
+                    Some(Format::Unknown(_)) => c.path.as_deref().unwrap_or(""),
                 };
                 out.push(Component {
                     size: c.size.context("composed artifact missing `size`")?,
@@ -347,7 +380,7 @@ impl Platform {
                         .digest
                         .as_deref()
                         .context("composed artifact missing `digest`")?,
-                    format: c.format,
+                    format: c.format.clone(),
                     strip: c.strip.as_deref().unwrap_or(""),
                     providers: &c.providers,
                     dest,
@@ -365,7 +398,7 @@ impl Platform {
                 .providers
                 .as_deref()
                 .context("platform block missing `providers`")?;
-            let dest = match self.format {
+            let dest = match &self.format {
                 // A single-file format (including a raw binary with no format)
                 // is itself the executable, so it's placed at `path` within the
                 // extraction dir. An archive is unpacked into the root, with the
@@ -379,12 +412,13 @@ impl Platform {
                     | Format::TarZst
                     | Format::Zip,
                 ) => "",
+                Some(Format::Unknown(_)) => "",
             };
             Ok(vec![Component {
                 size,
                 hash,
                 digest,
-                format: self.format,
+                format: self.format.clone(),
                 strip: "",
                 providers,
                 dest,

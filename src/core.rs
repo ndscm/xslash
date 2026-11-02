@@ -277,6 +277,7 @@ fn extract_component(
             ::ruzstd::decoding::StreamingDecoder::new(File::open(file)?)?,
             &target,
         )?,
+        Some(Format::Unknown(name)) => bail!("cannot extract unknown format {name:?}"),
     }
     Ok(())
 }
@@ -461,7 +462,7 @@ impl Core {
 
         let outcome = (|| {
             for (src, file) in platform.components()?.iter().zip(files) {
-                extract_component(file, src.format, src.strip, &lock.tmp, src.dest)
+                extract_component(file, src.format.clone(), src.strip, &lock.tmp, src.dest)
                     .with_context(|| format!("extracting {}", src.digest))?;
             }
             Ok(())
