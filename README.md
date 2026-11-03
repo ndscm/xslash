@@ -170,6 +170,13 @@ Create or update an xslash entry from a skeleton file.
 - `--replace {{TAG}}=x.x.x` - repeatable; replaces every literal occurrence of
   the marker (here `{{TAG}}`) in the skeleton file. The marker is matched
   verbatim - any string works; `{{...}}` is just the recommended convention.
+- `--fileurl translate|absolutize|keep` - Decides how to resolve skeleton file
+  url:
+  - `translate` - path is relative to the skeleton; rebase it to be relative to
+    `--out`.
+  - `absolutize` - path is relative to the skeleton; write it as an absolute
+    path.
+  - `keep` - path is already relative to `--out`; leave it verbatim.
 - `--final` - sets the `final` flag in the generated entry; absent means not
   final.
 - `--out executable.xslash` - required; the path to write the entry to.
@@ -290,6 +297,32 @@ skipped.
   }
 }
 ```
+
+## Local file provider
+
+If a provider `url` is prefixed with `file:` (a single slash; **not** the
+`file://` URI form), xslash loads the artifact from the local filesystem instead
+of issuing an http(s) GET. The rest of the pipeline - hash check, extraction,
+caching - is unchanged.
+
+The path after `file:` is either absolute (`file:/abs/path/to/artifact.tar.gz`)
+or relative to the entry file that declares it, not to the current working
+directory. See an example at
+[prebuilt/prettier/bin/prettier-standalone.xslash](prebuilt/prettier/bin/prettier-standalone.xslash)
+
+Using a `file:` provider is **not recommended** for three reasons:
+
+- **It bloats checkout.** The artifact has to live next to its entry, typically
+  checked into the repository, so every checkout has to fetch it instead of
+  downloading lazily on first use.
+- **Reproducibility is shaky.** The local build process may not produce a
+  byte-stable artifact with the same digest every time, so the entry's digest
+  can drift from what the build actually emits.
+- **It fights the repo lock files.** The sources and tooling that produce the
+  artifact may fight the repo's dependency graph, coupling the artifact's build
+  dependencies to the repo's pinned versions.
+
+Always prefer a permanent http(s) link whenever one is available.
 
 ## Inspired by dotslash
 
