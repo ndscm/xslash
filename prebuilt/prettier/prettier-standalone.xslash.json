@@ -1,0 +1,59 @@
+{
+  "name": "prettier-standalone",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "dist/prettier.sh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "file:./standalone.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "dist/prettier.sh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "file:./standalone.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "dist/prettier.sh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "file:./standalone.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "dist/prettier.sh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "file:./standalone.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "dist/prettier.sh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "file:./standalone.tar.gz"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "dist/prettier.sh",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "file:./standalone.tar.gz"
+        }
+      ]
+    }
+  }
+}

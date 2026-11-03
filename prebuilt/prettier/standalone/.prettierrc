@@ -1,0 +1,14 @@
+{
+  "endOfLine": "lf",
+  "importOrderSeparation": true,
+  "importOrderSideEffects": false,
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "printWidth": 80,
+  "proseWrap": "always",
+  "semi": false,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "useTabs": false
+}
