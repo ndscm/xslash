@@ -137,6 +137,71 @@ impl Drop for CacheLock {
     }
 }
 
+/// Whether a process with `pid` currently exists. A lock whose holder is gone can
+/// be reclaimed; one whose holder is alive must be waited on.
+#[cfg(unix)]
+fn check_process_alive(pid: u32) -> bool {
+    // `kill(pid, 0)` sends no signal but runs the existence/permission checks:
+    // success, or `EPERM` (exists but owned by another user), means alive; only
+    // `ESRCH` means gone. A reused pid thus reads as alive, which is the safe
+    // direction - we wait rather than steal a lock that may still be in use.
+    if unsafe { ::libc::kill(pid as ::libc::pid_t, 0) } == 0 {
+        return true;
+    }
+    ::std::io::Error::last_os_error().raw_os_error() != Some(::libc::ESRCH)
+}
+
+/// Without a portable way to test process liveness, assume the holder is alive so
+/// the lock is waited on rather than reclaimed.
+#[cfg(not(unix))]
+fn check_process_alive(_pid: u32) -> bool {
+    true
+}
+
+/// Attempt to take `lock` for us.
+fn claim_lock(prelock: &Path, lock: &Path) -> Result<bool> {
+    loop {
+        match ::std::fs::hard_link(prelock, lock) {
+            Ok(()) => return Ok(true),
+            Err(err) if err.kind() == ::std::io::ErrorKind::AlreadyExists => {}
+            Err(err) => return Err(err).with_context(|| format!("creating {}", lock.display())),
+        }
+
+        // Held. Read the holder's pid; a lock we published always carries one, so
+        // unparseable/empty content means we leave it alone and wait.
+        let holder = ::std::fs::read_to_string(lock)
+            .ok()
+            .and_then(|contents| contents.trim().parse::<u32>().ok())
+            .filter(|&pid| pid > 0);
+        match holder {
+            Some(pid) if !check_process_alive(pid) => {}
+            _ => return Ok(false),
+        }
+
+        // The holder has exited. Move the dead lock to a sibling path to claim the
+        // sole right to clear it; losing that race to another waiter, or finding a
+        // live holder once moved, means we restore it and wait.
+        let sibling = lock.with_extension(format!("lock.sibling.{}", ::std::process::id()));
+        if ::std::fs::rename(lock, &sibling).is_err() {
+            return Ok(false);
+        }
+        let sibling_pid = ::std::fs::read_to_string(&sibling)
+            .ok()
+            .and_then(|contents| contents.trim().parse::<u32>().ok())
+            .filter(|&pid| pid > 0);
+        match sibling_pid {
+            Some(pid) if !check_process_alive(pid) => {
+                let _ = ::std::fs::remove_file(&sibling);
+                // Cleared: loop to relink into the now-free lock.
+            }
+            _ => {
+                let _ = ::std::fs::rename(&sibling, lock);
+                return Ok(false);
+            }
+        }
+    }
+}
+
 impl CacheLock {
     /// Lock the artifact at `dest`, whose staging (`.tmp`), metadata (`.json`),
     /// and `.lock` paths are its siblings. Creates `dest`'s parent, then blocks
@@ -154,19 +219,16 @@ impl CacheLock {
         let tmp = dest.with_extension("tmp");
         let metadata = dest.with_extension("json");
 
-        // Block until we can atomically create the lock file, polling every
-        // 100ms and warning once after 60s so a stale lock is noticeable. The
-        // lock is held until the file is removed by this guard's `Drop`.
+        let prelock = dest.with_extension(format!("lock.{}", ::std::process::id()));
+        ::std::fs::write(&prelock, ::std::process::id().to_string())
+            .with_context(|| format!("writing {}", prelock.display()))?;
         let start = Instant::now();
         let mut warned = false;
-        loop {
-            match ::std::fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&lock)
-            {
-                Ok(_) => break,
-                Err(err) if err.kind() == ::std::io::ErrorKind::AlreadyExists => {
+        let claim_result = loop {
+            match claim_lock(&prelock, &lock) {
+                Ok(true) => break Ok(()),
+                Err(err) => break Err(err),
+                Ok(false) => {
                     if !warned && start.elapsed() >= Duration::from_secs(60) {
                         eprintln!(
                             "waiting for lock at {}, please remove stale lock if necessary",
@@ -174,13 +236,12 @@ impl CacheLock {
                         );
                         warned = true;
                     }
-                    ::std::thread::sleep(Duration::from_millis(100));
-                }
-                Err(err) => {
-                    return Err(err).with_context(|| format!("creating {}", lock.display()));
+                    ::std::thread::sleep(Duration::from_secs(1));
                 }
             }
-        }
+        };
+        let _ = ::std::fs::remove_file(&prelock);
+        claim_result?;
 
         // Track the now-held lock so a fatal signal can unlink it.
         let slot = TerminatingSignals::register_unlink(&lock);
