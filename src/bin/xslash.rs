@@ -94,27 +94,29 @@ fn find_project_entry(name: &str) -> Result<Option<PathBuf>> {
 }
 
 fn execv_entry(entry_path: &OsStr, forward: &[OsString]) -> Result<()> {
-    let path = Path::new(entry_path);
-    let display = path.display().to_string();
-    let contents =
-        ::std::fs::read_to_string(path).with_context(|| format!("reading entry {display}"))?;
+    let first_entry_path = Path::new(entry_path);
+    let display = first_entry_path.display().to_string();
+    let contents = ::std::fs::read_to_string(first_entry_path)
+        .with_context(|| format!("reading entry {display}"))?;
     let entry = XslashEntry::parse(&contents).with_context(|| format!("in entry {display}"))?;
 
-    let resolved = if !entry.is_final()
+    let (final_entry_path, final_entry) = if !entry.is_final()
         && let Some(path) = find_project_entry(&entry.name)?
     {
         ::xslash::read_actual(&path)?
     } else if entry.actual().is_some() {
-        ::xslash::read_actual(path)?
+        ::xslash::read_actual(first_entry_path)?
     } else {
-        entry
+        (first_entry_path.to_path_buf(), entry)
     };
 
-    // The policy above has resolved which entry to run; execv_final runs it
+    let fileurl_base = final_entry_path.parent().unwrap_or_else(|| Path::new("."));
+
+    // The policy above has resolved which entry to run; execv_final_full runs it
     // directly without re-consulting the `final` field. argv[0] stays the path
     // the launcher was invoked as, so the binary behaves exactly as a symlink
     // in its place would (e.g. `python` vs `python3` sharing one entry).
-    ::xslash::execv_final(&resolved, entry_path, forward)
+    ::xslash::execv_final_full(fileurl_base, &final_entry, entry_path, forward)
 }
 
 // ---------------------------------------------------------------------------

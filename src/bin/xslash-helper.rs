@@ -15,12 +15,21 @@ use ::clap::Parser;
 use ::clap::Subcommand;
 use ::std::ffi::OsStr;
 use ::std::path::Path;
+use ::std::path::PathBuf;
 use ::std::process::ExitCode;
 use ::std::time::Duration;
 use ::std::time::SystemTime;
 
 use ::xslash::Chmod;
+use ::xslash::CreateFileUrlMode;
 use ::xslash::XslashEntry;
+
+fn parent_dir(path: &str) -> PathBuf {
+    Path::new(path)
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .map_or_else(|| PathBuf::from("."), Path::to_path_buf)
+}
 
 fn read_entry(path: &str) -> Result<XslashEntry> {
     let contents = ::std::fs::read_to_string(path).with_context(|| format!("reading {path}"))?;
@@ -67,6 +76,10 @@ struct CreateArgs {
     /// `{{...}}` is just the recommended convention. Repeatable.
     #[arg(long = "replace", value_name = "{{TAG}}=VALUE")]
     replace: Vec<String>,
+
+    /// Resolve a `file:` provider URL in the skeleton.
+    #[arg(long = "fileurl", value_name = "translate|absolutize|keep")]
+    fileurl: Option<CreateFileUrlMode>,
 
     /// Only generate these platform keys. Repeatable.
     #[arg(long = "platform", value_name = "<kernel>-<arch>")]
@@ -178,7 +191,17 @@ fn create(args: CreateArgs) -> Result<()> {
             .retain(|key, _| args.platform.contains(key));
     }
 
-    let entry = ::xslash::create(skeleton, replacements, args.is_final)?;
+    let skeleton_dir = parent_dir(&args.skeleton);
+    let out_dir = parent_dir(&args.out);
+
+    let entry = ::xslash::create_full(
+        skeleton,
+        &skeleton_dir,
+        replacements,
+        args.fileurl,
+        args.is_final,
+        &out_dir,
+    )?;
 
     let mut buf: Vec<u8> = Vec::new();
     buf.extend_from_slice(b"#!/usr/bin/env xslash\n");
@@ -229,11 +252,12 @@ fn create(args: CreateArgs) -> Result<()> {
 // ---------------------------------------------------------------------------
 
 fn download(args: DownloadArgs) -> Result<()> {
+    let fileurl_base = parent_dir(&args.entry);
     let entry = read_entry(&args.entry)?;
 
     if args.all {
         for key in entry.platforms.keys() {
-            for path in ::xslash::download(&entry, Some(key))? {
+            for path in ::xslash::download_full(&fileurl_base, &entry, Some(key))? {
                 println!("[{key}] {}", path.display());
             }
         }
@@ -246,12 +270,12 @@ fn download(args: DownloadArgs) -> Result<()> {
                 );
                 continue;
             }
-            for path in ::xslash::download(&entry, Some(key))? {
+            for path in ::xslash::download_full(&fileurl_base, &entry, Some(key))? {
                 println!("[{key}] {}", path.display());
             }
         }
     } else {
-        for path in ::xslash::download(&entry, None)? {
+        for path in ::xslash::download_full(&fileurl_base, &entry, None)? {
             println!("{}", path.display());
         }
     }
@@ -263,8 +287,9 @@ fn download(args: DownloadArgs) -> Result<()> {
 // ---------------------------------------------------------------------------
 
 fn extract(args: ExtractArgs) -> Result<()> {
+    let fileurl_base = parent_dir(&args.entry);
     let entry = read_entry(&args.entry)?;
-    let exe = ::xslash::extract(&entry, args.clean)?;
+    let exe = ::xslash::extract_full(&fileurl_base, &entry, args.clean)?;
     println!("{}", exe.display());
     Ok(())
 }

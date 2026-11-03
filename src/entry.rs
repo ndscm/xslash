@@ -77,16 +77,14 @@ pub struct Component<'a> {
     pub dest: &'a str,
 }
 
-/// A single source for an artifact. xslash only fetches `http`/`https` URLs; a
-/// provider with no `url` (e.g. one tagged with a `type` xslash doesn't
-/// understand) is skipped.
+/// A single source for an artifact.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Provider {
     /// Provider type, kept for dotslash compatibility.
     #[serde(default, rename = "type", skip_serializing_if = "Option::is_none")]
     pub provider_type: Option<String>,
 
-    /// The download URL. Must start with `http://` or `https://`
+    /// The artifact URL. Starts with `http://`, `https://` or `file:`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }

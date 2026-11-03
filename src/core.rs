@@ -309,11 +309,21 @@ impl Core {
             .context("no xslash cache home available; set XSLASH_CACHE_HOME")
     }
 
+    fn download_local(&self, path: &str, dest: &Path) -> Result<()> {
+        let src = Path::new(path);
+        let mut reader = File::open(src).with_context(|| format!("opening {}", src.display()))?;
+        let mut file =
+            File::create(dest).with_context(|| format!("creating {}", dest.display()))?;
+        ::std::io::copy(&mut reader, &mut file)
+            .with_context(|| format!("writing {}", dest.display()))?;
+        Ok(())
+    }
+
     /// Download `src` into `tmp`, trying the cache server first and then each
     /// provider in order, verifying each attempt against `src`'s hash, digest,
     /// and size. Returns whether the bytes came from a provider (and so should
     /// be PUT back to the cache server).
-    fn http_download(&self, src: &Component, tmp: &Path) -> Result<bool> {
+    fn download(&self, src: &Component, tmp: &Path) -> Result<bool> {
         if self
             .http
             .cache_server_get(src.hash.as_str(), src.digest, tmp)
@@ -331,11 +341,11 @@ impl Core {
             let Some(provider_url) = provider.url.as_deref() else {
                 continue;
             };
-            match self
-                .http
-                .get(provider_url, tmp)
-                .and_then(|()| src.hash.verify_file(tmp, src.digest, Some(src.size)))
-            {
+            let downloaded = match provider_url.strip_prefix("file:") {
+                Some(path) => self.download_local(path, tmp),
+                None => self.http.get(provider_url, tmp),
+            };
+            match downloaded.and_then(|()| src.hash.verify_file(tmp, src.digest, Some(src.size))) {
                 Ok(()) => return Ok(true),
                 Err(err) => {
                     let _ = ::std::fs::remove_file(tmp);
@@ -401,7 +411,7 @@ impl Core {
 
             // Download into the lock's staging path. The bool tracks whether to
             // PUT back to the server.
-            let from_provider = match self.http_download(&src, &lock.tmp) {
+            let from_provider = match self.download(&src, &lock.tmp) {
                 Ok(from_provider) => from_provider,
                 Err(err) => {
                     lock.release(false, true)?;
@@ -512,9 +522,11 @@ impl Core {
     /// and store it in the download cache (also PUTting it to the cache server).
     /// Drives [`probe`](Self::probe).
     ///
-    /// A provider URL already in the [probe cache](Cache::get_probe) short-
-    /// circuits the download, returning the recorded size and digest. Otherwise
-    /// the fresh result is recorded there before returning.
+    /// An http(s) provider URL already in the [probe cache](Cache::get_probe)
+    /// short-circuits the download, returning the recorded size and digest;
+    /// otherwise the fresh result is recorded there before returning. A `file:`
+    /// URL bypasses the cache entirely (read and write): its content isn't
+    /// addressed by its URL, so a rebuilt file must be re-read every time.
     ///
     /// Writing the artifact's `.json` sidecar is left to [`probe`](Self::probe),
     /// which has the fully-resolved entry.
@@ -540,13 +552,20 @@ impl Core {
             };
 
             // Reuse an earlier probe of this URL rather than downloading it
-            // again just to recompute the digest.
-            if let Some(probe) = self.cache()?.get_probe(provider_url) {
+            // again just to recompute the digest. Skip the cache for a `file:`
+            // URL: a local path's content isn't addressed by its URL, so a
+            // rebuilt file would otherwise be read as its stale digest/size.
+            let is_file = provider_url.starts_with("file:");
+            if !is_file && let Some(probe) = self.cache()?.get_probe(provider_url) {
                 staging.release(false, true)?;
                 return Ok((probe.size, probe.digest));
             }
 
-            if let Err(err) = self.http.get(provider_url, &staging.tmp) {
+            let downloaded = match provider_url.strip_prefix("file:") {
+                Some(path) => self.download_local(path, &staging.tmp),
+                None => self.http.get(provider_url, &staging.tmp),
+            };
+            if let Err(err) = downloaded {
                 last_err = Some(err.context(format!("provider {provider_url}")));
                 continue;
             }
@@ -580,17 +599,21 @@ impl Core {
                     .cache_server_put(Hash::Blake3.as_str(), &digest, &dest);
             }
 
-            // Record this URL's result so a later probe can skip the download.
-            self.cache()?
-                .update_probe(
-                    provider_url,
-                    &Probe {
-                        hash: Hash::Blake3,
-                        digest: digest.clone(),
-                        size,
-                    },
-                )
-                .ok();
+            // Record this URL's result so a later probe can skip the download -
+            // but not for a `file:` URL, whose content can change under the same
+            // path and so must be re-read every time.
+            if !is_file {
+                self.cache()?
+                    .update_probe(
+                        provider_url,
+                        &Probe {
+                            hash: Hash::Blake3,
+                            digest: digest.clone(),
+                            size,
+                        },
+                    )
+                    .ok();
+            }
             staging.release(false, true)?;
             return Ok((size, digest));
         }
