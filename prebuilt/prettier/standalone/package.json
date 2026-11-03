@@ -1,0 +1,11 @@
+{
+  "name": "xslash-prettier-launcher",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "prettier": "^3.8.3"
+  },
+  "packageManager": "pnpm@12.5.1"
+}

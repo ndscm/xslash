@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "prettier-standalone",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "99d8397ac797ccf28ae1dce79b7c5230043b65c6230a55fa6f54493ed325409b",
+      "size": 4602469,
+      "format": "tar.gz",
+      "path": "dist/prettier.sh",
+      "providers": [
+        {
+          "url": "file:../standalone.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "99d8397ac797ccf28ae1dce79b7c5230043b65c6230a55fa6f54493ed325409b",
+      "size": 4602469,
+      "format": "tar.gz",
+      "path": "dist/prettier.sh",
+      "providers": [
+        {
+          "url": "file:../standalone.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "99d8397ac797ccf28ae1dce79b7c5230043b65c6230a55fa6f54493ed325409b",
+      "size": 4602469,
+      "format": "tar.gz",
+      "path": "dist/prettier.sh",
+      "providers": [
+        {
+          "url": "file:../standalone.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "99d8397ac797ccf28ae1dce79b7c5230043b65c6230a55fa6f54493ed325409b",
+      "size": 4602469,
+      "format": "tar.gz",
+      "path": "dist/prettier.sh",
+      "providers": [
+        {
+          "url": "file:../standalone.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "99d8397ac797ccf28ae1dce79b7c5230043b65c6230a55fa6f54493ed325409b",
+      "size": 4602469,
+      "format": "tar.gz",
+      "path": "dist/prettier.sh",
+      "providers": [
+        {
+          "url": "file:../standalone.tar.gz"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "99d8397ac797ccf28ae1dce79b7c5230043b65c6230a55fa6f54493ed325409b",
+      "size": 4602469,
+      "format": "tar.gz",
+      "path": "dist/prettier.sh",
+      "providers": [
+        {
+          "url": "file:../standalone.tar.gz"
+        }
+      ]
+    }
+  }
+}
