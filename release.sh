@@ -3,22 +3,30 @@ set -euxo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 release_tag="${1:-""}"
-commit="${2:-"origin/main"}"
-
-if [[ -z "${release_tag}" ]]; then
-  release_tag=$(date -u "+v%y.%m.%d" | sed 's/\.0*/./g; s/v0*/v/')
-fi
-
-if [[ ! "${release_tag}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-.*)?$ ]]; then
-  printf "error: tag '%s' must be vX.Y.Z with an optional -suffix\n" "${release_tag}" >&2
-  exit 1
-fi
 
 git fetch --all --tags --prune --prune-tags
 
-if [[ -z "$(git tag --list "${release_tag}")" ]]; then
-  git tag "${release_tag}" "${commit}"
-  git push origin "${release_tag}"
+if [[ -z "${release_tag}" ]]; then
+  commit=""
+  version=""
+  candidates=($(git rev-list origin/main -- Cargo.toml))
+  for candidate in "${candidates[@]}"; do
+    candidate_version="$(git show "${candidate}:Cargo.toml" | sed -n 's/^version = "\(.*\)"$/\1/p')"
+    if [[ -n "${candidate_version}" && "${candidate_version}" != "0.0.0" ]]; then
+      commit="${candidate}"
+      version="${candidate_version}"
+      break
+    fi
+  done
+  if [[ -z "${commit}" ]]; then
+    printf "error: no release commit found on origin/main\n" >&2
+    exit 1
+  fi
+  release_tag="v${version}"
+  if [[ -z "$(git tag --list "${release_tag}")" ]]; then
+    git tag "${release_tag}" "${commit}"
+    git push origin "${release_tag}"
+  fi
 fi
 
 git checkout --detach "${release_tag}"
@@ -29,13 +37,6 @@ git clean -fdx
 git_tag="$(git describe --tags --always --dirty)"
 if [[ "${git_tag}" != "${release_tag}" ]]; then
   printf "error: git tag '%s' does not match release tag '%s'\n" "${git_tag}" "${release_tag}" >&2
-  exit 1
-fi
-
-version="${release_tag#v}"
-sed -i "s/^version = \"0.0.0\"/version = \"${version}\"/" Cargo.toml
-if ! grep -qF "version = \"${version}\"" Cargo.toml; then
-  printf "error: failed to set package version to '%s' in Cargo.toml\n" "${version}" >&2
   exit 1
 fi
 
