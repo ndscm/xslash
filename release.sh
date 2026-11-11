@@ -85,8 +85,8 @@ gh release create "${release_tag}" ./.cache/release/* \
   --notes "" \
   --draft
 
-# The GitHub release is staged as a draft and crates.io publishes are permanent,
-# so leave both final steps to the user once they've reviewed the draft.
-printf "\ndraft release '%s' created. to finish publishing, run:\n" "${release_tag}"
-printf "  gh release edit '%s' --draft=false\n" "${release_tag}"
-printf "  cargo publish --allow-dirty\n"
+cargo publish
+gh release edit "${release_tag}" --draft=false
+
+# Restore the previous branch if everything succeeded
+git checkout -
