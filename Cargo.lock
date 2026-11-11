@@ -1088,7 +1088,7 @@ dependencies = [
 
 [[package]]
 name = "xslash"
-version = "0.0.0"
+version = "26.11.12"
 dependencies = [
  "anyhow",
  "blake3",
