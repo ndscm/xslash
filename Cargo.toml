@@ -1,6 +1,6 @@
 [package]
 name = "xslash"
-version = "26.11.11"
+version = "0.0.0"
 edition = "2024"
 description = "simplified distribution of prebuilt executables"
 license = "MIT"
