@@ -22,6 +22,7 @@ use ::std::process::ExitCode;
 
 use ::xslash::Cache;
 use ::xslash::Chmod;
+use ::xslash::Discovery;
 use ::xslash::Hash;
 use ::xslash::XslashEntry;
 
@@ -33,6 +34,7 @@ Usage:
   xslash -- <command> [options]     Run a helper command (see below)
   xslash --export [--promote] [--silent] Generate PATH-sync code for shell to `eval`
   xslash --hook [--silent]          Generate code to hook `--export` for interactive shells
+  xslash --trust <path>             Add a xslash.json config file or its ancient dir to the trust list
   xslash --help                     Print help
   xslash --version                  Print version
 
@@ -45,55 +47,8 @@ Helper commands (after `--`):
   --version  Print version
 ";
 
-/// Collect every `xslash.json` on the path from the filesystem root down to
-/// `start`, ordered outermost (root) first and `start` last, along with the
-/// project dir: the nearest config's parent, or `None` when no config is found
-/// (in which case the config list is also empty).
-fn find_ancient_configs(start: &Path) -> (Option<PathBuf>, Vec<PathBuf>) {
-    let name = "xslash.json";
-    let mut configs = Vec::new();
-    let mut dir = Some(start);
-    while let Some(d) = dir {
-        let candidate = d.join(name);
-        if candidate.is_file() {
-            configs.push(candidate);
-        }
-        dir = d.parent();
-    }
-    // We walked from `start` upward, so `configs[0]` is the nearest (deepest)
-    // config; its parent is the project dir.
-    let project_dir = configs
-        .first()
-        .and_then(|json| json.parent())
-        .map(Path::to_path_buf);
-    // Reverse so the outermost config comes first.
-    configs.reverse();
-    (project_dir, configs)
-}
-
-/// Search the `xslash.json` files from the current directory up to the root for
-/// one that maps `name`, returning the resolved entry path. The nearest config
-/// to the current directory wins; outer configs act as a fallback for names a
-/// nearer config doesn't map.
-fn find_project_entry(name: &str) -> Result<Option<PathBuf>> {
-    let cwd = ::std::env::current_dir().context("getting current directory")?;
-    let (_, configs) = find_ancient_configs(&cwd);
-    // `configs` runs root -> cwd; scan from the nearest (deepest) config upward
-    // and take the first that maps `name`.
-    for json in configs.iter().rev() {
-        let contents = ::std::fs::read_to_string(json)
-            .with_context(|| format!("reading {}", json.display()))?;
-        let map: BTreeMap<String, String> = ::serde_json::from_str(&contents)
-            .with_context(|| format!("parsing {}", json.display()))?;
-        if let Some(rel) = map.get(name) {
-            let dir = json.parent().unwrap_or_else(|| Path::new("."));
-            return Ok(Some(dir.join(rel)));
-        }
-    }
-    Ok(None)
-}
-
 fn execv_entry(entry_path: &OsStr, forward: &[OsString]) -> Result<()> {
+    let discovery = Discovery { silent: true };
     let first_entry_path = Path::new(entry_path);
     let display = first_entry_path.display().to_string();
     let contents = ::std::fs::read_to_string(first_entry_path)
@@ -101,7 +56,7 @@ fn execv_entry(entry_path: &OsStr, forward: &[OsString]) -> Result<()> {
     let entry = XslashEntry::parse(&contents).with_context(|| format!("in entry {display}"))?;
 
     let (final_entry_path, final_entry) = if !entry.is_final()
-        && let Some(path) = find_project_entry(&entry.name)?
+        && let Some(path) = discovery.find_project_entry(&entry.name)?
     {
         ::xslash::read_actual(&path)?
     } else if entry.actual().is_some() {
@@ -265,8 +220,9 @@ fn reconcile_resolve_dir(
 /// to `eval`, syncing PATH with the current project. Run by hand or from a
 /// non-interactive script.
 fn export(promote: bool, silent: bool) -> Result<()> {
-    let cwd = ::std::env::current_dir().context("getting current directory")?;
-    let (project_dir, configs) = find_ancient_configs(&cwd);
+    let discovery = Discovery { silent };
+    let cwd = discovery.logical_cwd()?;
+    let (project_dir, configs) = discovery.find_ancient_configs(&cwd)?;
 
     let cache = Cache::from_env(false)?;
     let resolve_root = cache.resolve_root().display().to_string();
@@ -391,6 +347,47 @@ fn hook(silent: bool) -> Result<()> {
 }
 
 // ---------------------------------------------------------------------------
+// trust
+// ---------------------------------------------------------------------------
+
+/// Add a config file or directory to the trust list: one absolute logical path
+/// per line, a directory line ending with `/`, kept in sorted (byte) order
+/// with a trailing newline.
+fn trust(target: &OsStr) -> Result<()> {
+    let discovery = Discovery { silent: false };
+    let target_abs = discovery.logical_absolutize(Path::new(target))?;
+    let target_display = target_abs.display().to_string();
+    let target_stat =
+        ::std::fs::metadata(&target_abs).with_context(|| format!("inspecting {target_display}"))?;
+
+    let mut target_entry = match target_abs.into_os_string().into_string() {
+        Ok(line) => line,
+        Err(_) => bail!("cannot trust {target_display}: path is not valid UTF-8"),
+    };
+    if target_stat.is_dir() {
+        target_entry = format!("{}/", target_entry.trim_end_matches('/'));
+    }
+
+    let (trust_registry_path, trusted_paths) = discovery.trust_registry()?;
+    let mut trusted_paths = trusted_paths.unwrap_or_default();
+    trusted_paths.insert(target_entry);
+
+    let config_dir = trust_registry_path
+        .parent()
+        .unwrap_or_else(|| Path::new("."));
+    ::std::fs::create_dir_all(config_dir)
+        .with_context(|| format!("creating {}", config_dir.display()))?;
+    let mut contents = String::new();
+    for l in &trusted_paths {
+        contents.push_str(l);
+        contents.push('\n');
+    }
+    ::std::fs::write(&trust_registry_path, contents)
+        .with_context(|| format!("writing {}", trust_registry_path.display()))?;
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
 
@@ -440,6 +437,12 @@ fn run() -> Result<()> {
             Some("--hook") => {
                 let silent = parse_hook_flags(&rest[1..])?;
                 hook(silent)
+            }
+            Some("--trust") => {
+                let [target] = &rest[1..] else {
+                    bail!("--trust takes exactly one <path> argument");
+                };
+                trust(target)
             }
             Some("--help") => {
                 print!("{HELP}");

@@ -7,6 +7,7 @@
 mod cache;
 mod chmod;
 mod core;
+mod discovery;
 mod entry;
 mod exec;
 mod hash;
@@ -26,6 +27,7 @@ use crate::core::Core;
 
 pub use crate::cache::Cache;
 pub use crate::chmod::Chmod;
+pub use crate::discovery::Discovery;
 pub use crate::entry::XslashEntry;
 pub use crate::hash::Hash;
 
