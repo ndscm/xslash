@@ -70,9 +70,10 @@ fn decompress_to_file<R: Read>(mut reader: R, target: &Path) -> Result<()> {
 }
 
 fn xz_decode(file: &Path) -> Result<Vec<u8>> {
-    let mut reader = BufReader::new(File::open(file)?);
+    let reader = BufReader::new(File::open(file)?);
+    let mut decoder = ::lzma_rust2::XzReader::new(reader, true);
     let mut out = Vec::new();
-    ::lzma_rs::xz_decompress(&mut reader, &mut out).context("xz decompress")?;
+    decoder.read_to_end(&mut out).context("xz decompress")?;
     Ok(out)
 }
 
