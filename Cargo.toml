@@ -13,6 +13,7 @@ filetime.workspace = true
 flate2.workspace = true
 libc.workspace = true
 lzma-rs.workspace = true
+lzma-rust2.workspace = true
 ruzstd.workspace = true
 rustix.workspace = true
 serde.workspace = true
