@@ -34,7 +34,7 @@ Usage:
   xslash -- <command> [options]     Run a helper command (see below)
   xslash --export [--promote] [--silent] Generate PATH-sync code for shell to `eval`
   xslash --hook [--silent]          Generate code to hook `--export` for interactive shells
-  xslash --trust <path>             Add a xslash.json config file or its ancient dir to the trust list
+  xslash --trust <path>             Add a config file or its ancient dir to the trust list
   xslash --help                     Print help
   xslash --version                  Print version
 
@@ -128,6 +128,7 @@ fn sh_quote(s: &str) -> String {
 /// `XSLASH_RESOLVE_DIGEST`) still matches and the dir exists; otherwise rebuilds
 /// the shims, announcing changes on stderr unless `silent`.
 fn reconcile_resolve_dir(
+    discovery: &Discovery,
     resolve_dir: &Path,
     configs: &[PathBuf],
     old_digest: Option<&str>,
@@ -137,12 +138,9 @@ fn reconcile_resolve_dir(
     // `configs` runs root -> cwd, so inserting in order lets a nearer config
     // override an outer one (nearest wins, as at runtime).
     let mut resolved: BTreeMap<String, String> = BTreeMap::new();
-    for json in configs {
-        let contents = ::std::fs::read_to_string(json)
-            .with_context(|| format!("reading {}", json.display()))?;
-        let entries: BTreeMap<String, String> = ::serde_json::from_str(&contents)
-            .with_context(|| format!("parsing {}", json.display()))?;
-        let dir = json.parent().unwrap_or_else(|| Path::new("."));
+    for config in configs {
+        let entries = discovery.load_config(config)?;
+        let dir = config.parent().unwrap_or_else(|| Path::new("."));
         for (name, rel) in entries {
             resolved.insert(name, dir.join(rel).display().to_string());
         }
@@ -251,6 +249,7 @@ fn export(promote: bool, silent: bool) -> Result<()> {
         .filter(|s| !s.is_empty());
     let new_resolve_digest = match &resolve_dir {
         Some(resolve_dir) => Some(reconcile_resolve_dir(
+            &discovery,
             resolve_dir,
             &configs,
             old_resolve_digest.as_deref(),
