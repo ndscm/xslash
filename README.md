@@ -59,8 +59,8 @@ file usually ends in `.xslash` or has no extension, and is marked executable
 ```jsonc
 // add shebang: #!/usr/bin/env xslash
 {
-  "name": "node", // logical name; used as arg0 on exec and as the lookup key in xslash.json
-  "final": true, // if true, use this entry directly and skip project-level xslash.json resolution
+  "name": "node", // logical name; used for entry discovery
+  "final": true, // if true, use this entry directly and skip project-level entry discovery
   "platforms": {
     "linux-amd64": {
       "hash": "blake3", // blake3 is the only supported hash algorithm for now
@@ -151,7 +151,7 @@ putting `eval "$(xslash --hook)"` in `~/.bashrc` or `~/.zshrc`.
 
 ### `xslash --trust <path>`
 
-Add an `xslash.json` config file, or a directory, to the trust list. Trusting a
+Add an `.xslashrc` config file, or a directory, to the trust list. Trusting a
 directory trusts every config in it, directly or nested. See [Trust](#trust).
 
 ### `xslash --help`
@@ -251,36 +251,43 @@ For `ro/`, `<digest>` is the hash of the serialized extraction metadata (the
 entry's platform block), not of any single source archive, so a composed
 directory built from several archives still gets one stable key.
 
-## xslash.json
+## Entry discovery and .xslashrc
 
 xslash entries aren't always on `PATH` for a subprocess such as
 `git rebase --exec` or `claude`. To mimic direnv's behavior even in that case, a
-project can place an `xslash.json` at its root. When an entry that isn't `final`
-is invoked - for example a system entry at `/usr/local/bin/entry.xslash` or
-`~/.local/bin/entry.xslash` - xslash searches upward from the current directory
-for an `xslash.json`; if it finds one that maps the entry's `name`, the
-project-defined entry is used instead of the invoked one.
+project can place an `.xslashrc` at its root, mapping names to entry paths.
 
-```json
-{
-  "clang": "path/to/clang.xslash",
-  "go": "path/to/go.xslash",
-  "node": "path/to/node.xslash",
-  "python": "path/to/python.xslash"
-}
+`.xslashrc` is a line-based file: each non-empty line is a name and an entry
+path separated by the first space. Lines starting with `#` are comments. Entry
+paths are relative to the `.xslashrc` itself; the name doesn't have to match any
+file name on disk.
+
+```
+# project toolchain
+clang path/to/clang.xslash
+go path/to/go.xslash
+node path/to/node.xslash
+python path/to/python.xslash
 ```
 
-The key should match the `name` in the system entry.
+The effective xslash entry is discovered in the following order:
 
-If `final` is true in the xslash entry (usually the repo entry), xslash skips
-the search.
+1. If the invoked entry is `final`, it is the effective entry.
+2. Otherwise, xslash walks from the logical current directory (`$PWD`, symlinks
+   intact) up to the filesystem root, collecting every trusted `.xslashrc` (see
+   [Trust](#trust)). The nearest one that maps the entry's `name` provides the
+   effective entry.
+3. If none maps the name, the invoked entry itself is the effective entry.
+
+The effective entries can be hooked into `PATH` with `--export`: every name
+mapped in step 2 is registered in `PATH` under that name.
 
 ## Trust
 
-Both the `xslash.json` lookup and `--export` walk from the current directory up
-to the filesystem root and load every `xslash.json` they find, so just `cd`-ing
-into a downloaded project could inject its entries into your `PATH`. The trust
-list gates that: `xslash --trust <path>` records a config file or a directory as
+Both the `.xslashrc` lookup and `--export` walk from the current directory up to
+the filesystem root and load every `.xslashrc` they find, so just `cd`-ing into
+a downloaded project could inject its entries into your `PATH`. The trust list
+gates that: `xslash --trust <path>` records a config file or a directory as
 trusted, and a config is loaded only when the list names it directly or names a
 directory it lives in (directly or nested).
 
@@ -294,15 +301,15 @@ directory it lives in (directly or nested).
   shell sees it, symlinks intact, without resolving to the physical location.
   The same config reached through a different symlink spelling is a different
   path and needs its own trust entry.
-- The trust list only gates `xslash.json` discovery: the `--export`/`--hook`
-  PATH injection and the project lookup for a non-`final` entry. Running an
-  xslash entry directly (`xslash <entry>`, or executing an entry file) is not
+- The trust list only gates `.xslashrc` discovery: the `--export`/`--hook` PATH
+  injection and the project lookup for a non-`final` entry. Running an xslash
+  entry directly (`xslash <entry>`, or executing an entry file) is not
   affected - a `final` entry, or one you invoke by path, runs regardless of the
   trust list.
 
 > **Note:** the trust list only defends against _accidentally_ injecting
 > downloaded xslash entries - e.g. `cd` into a freshly cloned repository whose
-> `xslash.json` would otherwise put its executables on `PATH`. It is not a
+> `.xslashrc` would otherwise put its executables on `PATH`. It is not a
 > security boundary: a malicious script already running as your user can edit
 > the trust list (or your shell rc files, or `PATH`) itself.
 
