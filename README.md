@@ -149,6 +149,11 @@ Generate shell code to sync PATH with the current project. Run it with
 Generate shell code to hook `--export` for interactive shells. Install it by
 putting `eval "$(xslash --hook)"` in `~/.bashrc` or `~/.zshrc`.
 
+### `xslash --trust <path>`
+
+Add an `xslash.json` config file, or a directory, to the trust list. Trusting a
+directory trusts every config in it, directly or nested. See [Trust](#trust).
+
 ### `xslash --help`
 
 Print the help message.
@@ -269,6 +274,37 @@ The key should match the `name` in the system entry.
 
 If `final` is true in the xslash entry (usually the repo entry), xslash skips
 the search.
+
+## Trust
+
+Both the `xslash.json` lookup and `--export` walk from the current directory up
+to the filesystem root and load every `xslash.json` they find, so just `cd`-ing
+into a downloaded project could inject its entries into your `PATH`. The trust
+list gates that: `xslash --trust <path>` records a config file or a directory as
+trusted, and a config is loaded only when the list names it directly or names a
+directory it lives in (directly or nested).
+
+- The trust list lives at `$XDG_CONFIG_HOME/xslash/trust` (default
+  `~/.config/xslash/trust`): one absolute path per line in sorted order, with a
+  directory line ending in `/`.
+- Until the trust list exists, every config is trusted. Once the file exists, an
+  untrusted config is skipped and announced on stderr along with the
+  `xslash --trust` command that would trust it.
+- Stored paths are logical: `xslash --trust .` records the path the way your
+  shell sees it, symlinks intact, without resolving to the physical location.
+  The same config reached through a different symlink spelling is a different
+  path and needs its own trust entry.
+- The trust list only gates `xslash.json` discovery: the `--export`/`--hook`
+  PATH injection and the project lookup for a non-`final` entry. Running an
+  xslash entry directly (`xslash <entry>`, or executing an entry file) is not
+  affected - a `final` entry, or one you invoke by path, runs regardless of the
+  trust list.
+
+> **Note:** the trust list only defends against _accidentally_ injecting
+> downloaded xslash entries - e.g. `cd` into a freshly cloned repository whose
+> `xslash.json` would otherwise put its executables on `PATH`. It is not a
+> security boundary: a malicious script already running as your user can edit
+> the trust list (or your shell rc files, or `PATH`) itself.
 
 ## Cache server
 
