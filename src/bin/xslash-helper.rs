@@ -22,18 +22,33 @@ use ::std::time::SystemTime;
 
 use ::xslash::Chmod;
 use ::xslash::CreateFileUrlMode;
+use ::xslash::Discovery;
 use ::xslash::XslashEntry;
 
-fn parent_dir(path: &str) -> PathBuf {
-    Path::new(path)
-        .parent()
+fn parent_dir(path: &Path) -> PathBuf {
+    path.parent()
         .filter(|p| !p.as_os_str().is_empty())
         .map_or_else(|| PathBuf::from("."), Path::to_path_buf)
 }
 
-fn read_entry(path: &str) -> Result<XslashEntry> {
-    let contents = ::std::fs::read_to_string(path).with_context(|| format!("reading {path}"))?;
+fn read_entry(path: &Path) -> Result<XslashEntry> {
+    let contents =
+        ::std::fs::read_to_string(path).with_context(|| format!("reading {}", path.display()))?;
     XslashEntry::parse(&contents)
+}
+
+/// Resolve a command's entry argument.
+fn resolve_entry(arg: &str) -> Result<PathBuf> {
+    let discovery = Discovery { silent: false };
+    let path = Path::new(arg);
+    let resolved = if path.is_file() {
+        path.to_path_buf()
+    } else {
+        discovery.find_project_entry(arg)?.with_context(|| {
+            format!("{arg} is neither an entry file nor a name in a trusted xslash.json")
+        })?
+    };
+    Ok(resolved)
 }
 
 /// Create a symlink at `link` pointing at `target`, replacing whatever is
@@ -108,6 +123,7 @@ struct DownloadArgs {
     #[arg(long = "platform", value_name = "<kernel>-<arch>")]
     platform: Vec<String>,
 
+    /// An entry file, or an entry name.
     entry: String,
 }
 
@@ -117,6 +133,7 @@ struct ExtractArgs {
     #[arg(long)]
     clean: bool,
 
+    /// An entry file, or an entry name.
     entry: String,
 }
 
@@ -132,7 +149,7 @@ struct CleanArgs {
     #[arg(long)]
     extracted: bool,
 
-    /// An entry file, or a duration like `2d`, `3m`, `4y`.
+    /// An entry file, an entry name, or a duration like `2d`, `3m`, `4y`.
     target: String,
 }
 
@@ -191,8 +208,8 @@ fn create(args: CreateArgs) -> Result<()> {
             .retain(|key, _| args.platform.contains(key));
     }
 
-    let skeleton_dir = parent_dir(&args.skeleton);
-    let out_dir = parent_dir(&args.out);
+    let skeleton_dir = parent_dir(Path::new(&args.skeleton));
+    let out_dir = parent_dir(Path::new(&args.out));
 
     let entry = ::xslash::create_full(
         skeleton,
@@ -252,8 +269,9 @@ fn create(args: CreateArgs) -> Result<()> {
 // ---------------------------------------------------------------------------
 
 fn download(args: DownloadArgs) -> Result<()> {
-    let fileurl_base = parent_dir(&args.entry);
-    let entry = read_entry(&args.entry)?;
+    let entry_path = resolve_entry(&args.entry)?;
+    let fileurl_base = parent_dir(&entry_path);
+    let entry = read_entry(&entry_path)?;
 
     if args.all {
         for key in entry.platforms.keys() {
@@ -266,7 +284,7 @@ fn download(args: DownloadArgs) -> Result<()> {
             if !entry.platforms.contains_key(key) {
                 eprintln!(
                     "xslash-helper: (warning) --platform {key} not found in {}",
-                    args.entry
+                    entry_path.display()
                 );
                 continue;
             }
@@ -287,8 +305,9 @@ fn download(args: DownloadArgs) -> Result<()> {
 // ---------------------------------------------------------------------------
 
 fn extract(args: ExtractArgs) -> Result<()> {
-    let fileurl_base = parent_dir(&args.entry);
-    let entry = read_entry(&args.entry)?;
+    let entry_path = resolve_entry(&args.entry)?;
+    let fileurl_base = parent_dir(&entry_path);
+    let entry = read_entry(&entry_path)?;
     let exe = ::xslash::extract_full(&fileurl_base, &entry, args.clean)?;
     println!("{}", exe.display());
     Ok(())
@@ -341,7 +360,7 @@ fn clean(args: CleanArgs) -> Result<()> {
         return Ok(());
     }
 
-    let entry = read_entry(&args.target)?;
+    let entry = read_entry(&resolve_entry(&args.target)?)?;
     ::xslash::clean(&entry, downloaded, extracted)?;
     Ok(())
 }
